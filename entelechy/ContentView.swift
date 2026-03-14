@@ -8,14 +8,37 @@
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject private var viewModel = LogEntryViewModel()
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        TabView {
+            VStack(spacing: AppLayout.pageSpacing) {
+                appTitle
+                LogEntryView(viewModel: viewModel)
+            }
+            .tabItem {
+                Label("Log", systemImage: "square.and.pencil")
+            }
+
+            VStack(spacing: AppLayout.pageSpacing) {
+                appTitle
+                CalendarView(viewModel: viewModel)
+            }
+            .tabItem {
+                Label("History", systemImage: "calendar")
+            }
         }
-        .padding()
+        .tint(AppColors.accent)
+    }
+
+    // Title
+    private var appTitle: some View {
+        
+        Text("entelechy")
+            .font(.system(.largeTitle, design: .serif))
+            .fontWeight(.semibold)
+            .padding(.top, AppLayout.titleTopPadding)
+        
     }
 }
 
