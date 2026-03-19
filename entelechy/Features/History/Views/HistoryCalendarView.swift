@@ -1,5 +1,5 @@
 //
-//  CalendarView.swift
+//  HistoryCalendarView.swift
 //  entelechy
 //
 //  Created by Angel Prieto on 03/12/26.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct CalendarView: View {
+struct HistoryCalendarView: View {
     
     @ObservedObject var viewModel: LogEntryViewModel
     
@@ -96,8 +96,10 @@ struct CalendarView: View {
                     
                     // Sytles based on whether there is a log for that day and if date is currently selected.
                     // Filled - date is logged. Outlined - date is currently selected (regardless of having a log or not).
+                    // Underlined - current day.
                     let hasEntry: Bool = hasEntryOn(date)
                     let isSelected: Bool = isSelectedOn(date)
+                    let isToday: Bool = calendar.isDateInToday(date)
                     
                     Button(action: { selectedDate = date }) {
                         VStack(spacing: AppLayout.calendarDayContentSpacing) {
@@ -113,6 +115,15 @@ struct CalendarView: View {
                                     Circle()
                                         .stroke(isSelected ? AppColors.accent : Color.clear, lineWidth: AppLayout.calendarDayStrokeWidth)
                                 )
+                                .overlay(alignment: .bottom) {
+                                    if isToday {
+                                        Rectangle()
+                                            .fill(AppColors.accent)
+                                            .frame(width: AppLayout.calendarTodayUnderlineWidth, height: AppLayout.calendarTodayUnderlineHeight)
+                                            .cornerRadius(AppLayout.calendarTodayUnderlineHeight / 2)
+                                            .offset(y: 6)
+                                    }
+                                }
                         }
                         .frame(maxWidth: .infinity)
                     }

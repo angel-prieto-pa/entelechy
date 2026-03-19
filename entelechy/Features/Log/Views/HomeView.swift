@@ -1,0 +1,117 @@
+//
+//  HomeView.swift
+//  entelechy
+//
+//  Created by Angel Prieto on 11/28/25.
+//
+
+import SwiftUI
+
+struct HomeView: View {
+    
+    @StateObject private var viewModel = LogEntryViewModel()
+    @State private var isHistoryPresented = false
+    @State private var isProgressPresented = false
+
+    var body: some View {
+        ZStack {
+            VStack(spacing: AppLayout.pageSpacing) {
+                appTitle
+                LogEntryView(viewModel: viewModel)
+            }
+
+            floatingButtons
+        }
+    }
+
+    // Title
+    private var appTitle: some View {
+        Text("entelechy")
+            .font(.system(.largeTitle, design: .serif))
+            .fontWeight(.semibold)
+            .padding(.top, AppLayout.titleTopPadding)
+    }
+
+    private var floatingButtons: some View {
+        
+        VStack {
+            
+            Spacer()
+            
+            HStack {
+                
+                // History
+                CircleButton(
+                    image: Image(systemName: "clock.arrow.trianglehead.counterclockwise.rotate.90"),
+                    action: { isHistoryPresented = true },
+                    isPresented: $isHistoryPresented
+                ) {
+                    HistoryLogView(viewModel: viewModel)
+                }
+                
+
+                Spacer()
+                
+                // Progress
+                CircleButton(
+                    image: Image(systemName: "chart.line.uptrend.xyaxis"),
+                    action: { isProgressPresented = true },
+                    isPresented: $isProgressPresented
+                ) {
+                    ProgressPlaceholderView()
+                }
+
+            }
+            .padding(.horizontal, AppLayout.floatingButtonInset)
+            .padding(.bottom, AppLayout.floatingButtonBottomInset)
+        }
+        
+    }
+
+}
+
+private struct ProgressPlaceholderView: View {
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        VStack(spacing: AppLayout.pageSpacing) {
+            ProgressHeaderView(onBack: { dismiss() })
+
+            Text("Progress")
+                .font(.system(.largeTitle, design: .serif))
+                .fontWeight(.semibold)
+                .padding(.top, AppLayout.titleTopPadding)
+
+            Text("Coming soon")
+                .foregroundStyle(.secondary)
+
+            Spacer()
+        }
+        .padding()
+    }
+}
+
+private struct ProgressHeaderView: View {
+    let onBack: () -> Void
+
+    var body: some View {
+        HStack {
+            Button(action: onBack) {
+                Circle()
+                    .fill(AppColors.floatingButtonBackground)
+                    .frame(width: AppLayout.floatingButtonSize, height: AppLayout.floatingButtonSize)
+                    .shadow(color: AppColors.inputShadow, radius: AppLayout.floatingButtonShadowRadius, x: 0, y: AppLayout.floatingButtonShadowYOffset)
+                    .overlay(
+                        Image(systemName: "chevron.left")
+                            .foregroundColor(AppColors.accent)
+                            .font(.system(size: 18, weight: .semibold))
+                    )
+            }
+            Spacer()
+        }
+    }
+}
+
+#Preview {
+    HomeView()
+}
