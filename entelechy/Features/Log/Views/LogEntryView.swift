@@ -40,15 +40,15 @@ struct LogEntryView: View {
             }
             .padding(.horizontal)
 //            .disabled(!viewModel.isSubmitEnabled)
-
-            List(viewModel.entryLog) { entry in
-                HStack {
-                    Text("\(entry.weight, specifier: "%.1f") \(viewModel.unitLabel)")
-                    Spacer()
-                    Text(entry.date, style: .date)
-                        .foregroundColor(.secondary)
-                }
-            }
+//
+//            List(viewModel.entryLog) { entry in
+//                HStack {
+//                    Text("\(entry.weight, specifier: "%.1f") \(viewModel.unitLabel)")
+//                    Spacer()
+//                    Text(entry.date, style: .date)
+//                        .foregroundColor(.secondary)
+//                }
+//            }
         }
         .padding()
     }

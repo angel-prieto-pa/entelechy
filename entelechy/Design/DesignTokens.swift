@@ -42,7 +42,7 @@ private func blend(base: UIColor, tint: UIColor, amount: CGFloat) -> UIColor {
 enum AppLayout {
     static let pageSpacing: CGFloat = 16
     static let sectionSpacing: CGFloat = 20
-    static let titleTopPadding: CGFloat = 30
+    static let titleTopPadding: CGFloat = 50
 
     static let buttonVerticalPadding: CGFloat = 10
     static let buttonCornerRadius: CGFloat = 14

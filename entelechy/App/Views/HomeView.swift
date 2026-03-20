@@ -23,11 +23,20 @@ struct HomeView: View {
     var body: some View {
         ZStack {
             VStack(spacing: AppLayout.pageSpacing) {
+                
                 appTitle
+                
+                Spacer()
+                
                 LogEntryView(viewModel: viewModel)
+                
+                Spacer()
+                Spacer()
+                
+                floatingButtons
             }
 
-            floatingButtons
+            
         }
     }
 
@@ -42,8 +51,6 @@ struct HomeView: View {
     private var floatingButtons: some View {
         
         VStack {
-            
-            Spacer()
             
             HStack {
                 
