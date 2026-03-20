@@ -7,26 +7,56 @@
 
 import SwiftUI
 import Combine
+import CoreData
 
-class LogEntryViewModel: ObservableObject {
+final class LogEntryViewModel: ObservableObject {
     
     @Published var currentLog: String = ""
-    @Published var entryLog: [WeightEntry] = []
-    
+    @Published private(set) var entryLog: [WeightEntryModel] = []
+
+    private let context: NSManagedObjectContext
+
     let unitLabel: String = "lbs."
-    
+
+    init(context: NSManagedObjectContext) {
+        self.context = context
+        fetchEntries()
+    }
+
     // TODO: - validate weight and disable submit after
     var isSubmitEnabled: Bool {
         return true
     }
 
+    func fetchEntries() {
+        /* Fetches 'WeightEntry' objects from CoreData and updates 'entryLog' after converting data in accordance to 'WeightEntryModel'. */
+        
+        let request: NSFetchRequest<WeightEntry> = WeightEntry.fetchRequest()
+        request.sortDescriptors = [NSSortDescriptor(keyPath: \WeightEntry.date, ascending: false)]
+
+        do {
+            entryLog = try context.fetch(request).compactMap { $0.toModel() }
+        } catch {
+            print("Error - Unable to fetch data:", error)
+            entryLog = []
+        }
+    }
+
     func submitWeight() {
         let weight = validatedWeight
 
-        let entry = WeightEntry(date: Date(), weight: weight)
-        entryLog.append(entry)
-        currentLog = ""
+        let entry = WeightEntry(context: context)
+        entry.date = Date()
+        entry.weight = weight
 
+        do {
+            try context.save()
+            fetchEntries()
+        } catch {
+            print("Error - Unable to save data: ", error)
+        }
+
+        currentLog = ""
     }
 
     func updateInput(_ newValue: String) {
@@ -82,6 +112,5 @@ class LogEntryViewModel: ObservableObject {
         return value
         
     }
-
     
 }

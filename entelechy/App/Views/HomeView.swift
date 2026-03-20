@@ -6,12 +6,19 @@
 //
 
 import SwiftUI
+import CoreData
 
 struct HomeView: View {
     
-    @StateObject private var viewModel = LogEntryViewModel()
+    @StateObject private var viewModel: LogEntryViewModel
+    
     @State private var isHistoryPresented = false
     @State private var isProgressPresented = false
+
+    init(context: NSManagedObjectContext) {
+        // View Model relies on persistence container context to mangae data.
+        _viewModel = StateObject(wrappedValue: LogEntryViewModel(context: context))
+    }
 
     var body: some View {
         ZStack {
@@ -113,5 +120,5 @@ private struct ProgressHeaderView: View {
 }
 
 #Preview {
-    HomeView()
+    HomeView(context: PersistenceController.shared.container.viewContext)
 }

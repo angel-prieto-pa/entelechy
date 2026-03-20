@@ -41,9 +41,9 @@ struct LogEntryView: View {
             .padding(.horizontal)
 //            .disabled(!viewModel.isSubmitEnabled)
 
-            List(viewModel.entryLog.reversed()) { entry in
+            List(viewModel.entryLog) { entry in
                 HStack {
-                Text("\(entry.weight, specifier: "%.1f") \(viewModel.unitLabel)")
+                    Text("\(entry.weight, specifier: "%.1f") \(viewModel.unitLabel)")
                     Spacer()
                     Text(entry.date, style: .date)
                         .foregroundColor(.secondary)

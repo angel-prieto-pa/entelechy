@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		BD9CB5882F6CB55400569BD3 /* WeightModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = BD9CB5862F6CB55400569BD3 /* WeightModel.xcdatamodeld */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		BDF7BC0D2EDAAC72005BA17D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -24,6 +28,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		BD9CB5872F6CB55400569BD3 /* WeightModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = WeightModel.xcdatamodel; sourceTree = "<group>"; };
 		BDF7BBFF2EDAAC6E005BA17D /* entelechy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = entelechy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BDF7BC0C2EDAAC72005BA17D /* entelechyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = entelechyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BDF7BC162EDAAC72005BA17D /* entelechyUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = entelechyUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -72,6 +77,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		BD9CB58E2F6CD03400569BD3 /* CoreDataModels */ = {
+			isa = PBXGroup;
+			children = (
+				BD9CB5862F6CB55400569BD3 /* WeightModel.xcdatamodeld */,
+			);
+			path = CoreDataModels;
+			sourceTree = "<group>";
+		};
 		BDF7BBF62EDAAC6E005BA17D = {
 			isa = PBXGroup;
 			children = (
@@ -79,6 +92,7 @@
 				BDF7BC0F2EDAAC72005BA17D /* entelechyTests */,
 				BDF7BC192EDAAC72005BA17D /* entelechyUITests */,
 				BDF7BC002EDAAC6E005BA17D /* Products */,
+				BD9CB58E2F6CD03400569BD3 /* CoreDataModels */,
 			);
 			sourceTree = "<group>";
 		};
@@ -236,6 +250,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BD9CB5882F6CB55400569BD3 /* WeightModel.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -613,6 +628,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		BD9CB5862F6CB55400569BD3 /* WeightModel.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				BD9CB5872F6CB55400569BD3 /* WeightModel.xcdatamodel */,
+			);
+			currentVersion = BD9CB5872F6CB55400569BD3 /* WeightModel.xcdatamodel */;
+			path = WeightModel.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = BDF7BBF72EDAAC6E005BA17D /* Project object */;
 }

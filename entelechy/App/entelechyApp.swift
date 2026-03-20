@@ -6,13 +6,16 @@
 //
 
 import SwiftUI
+import CoreData
 
 @main
 struct entelechyApp: App {
     
+    let persistenceContext = PersistenceController.shared.container.viewContext
+    
     var body: some Scene {
         WindowGroup {
-            HomeView()
+            HomeView(context: persistenceContext)
         }
     }
     

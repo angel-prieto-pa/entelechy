@@ -161,7 +161,9 @@ struct HistoryCalendarView: View {
     }
 
     private var loggedDaySet: Set<Date> {
-        Set(viewModel.entryLog.map { calendar.startOfDay(for: $0.date) })
+        Set(viewModel.entryLog.map { entry in
+            calendar.startOfDay(for: entry.date)
+        })
     }
 
     private func hasEntryOn(_ date: Date) -> Bool {
