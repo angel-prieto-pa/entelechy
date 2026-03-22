@@ -26,7 +26,9 @@ struct HistoryCalendarView: View {
             header
             // Calendar Grid
             calendarGrid
-            
+            // Log Details
+            entryDetails
+
             Spacer()
             
         }
@@ -131,6 +133,40 @@ struct HistoryCalendarView: View {
                 }
                 
             }
+        }
+    }
+
+    private var entryDetails: some View {
+        /* Entry details for selected day. */
+        
+        Group {
+            
+            if let date = selectedDate {
+                
+                if let weight = viewModel.entryDictionary[calendar.startOfDay(for: date)] {
+                    
+                    VStack(spacing: 6) {
+                        Text(date.formatted(.dateTime.weekday(.wide).month().day()))
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                        
+                        
+                        Text("\(weight, specifier: "%.1f") \(viewModel.unitLabel)")
+                            .font(.title3.weight(.semibold))
+                            .foregroundStyle(.primary)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.top, AppLayout.sectionSpacing)
+                    
+                } else {
+                    
+                    Text("No log recorded.")
+                        .font(.body.italic())
+                        .foregroundStyle(.secondary)
+                    
+                }
+            }
+            
         }
     }
 

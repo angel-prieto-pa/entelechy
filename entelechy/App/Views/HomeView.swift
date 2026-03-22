@@ -34,9 +34,9 @@ struct HomeView: View {
                 Spacer()
                 
                 floatingButtons
+                
             }
 
-            
         }
     }
 

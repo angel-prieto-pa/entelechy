@@ -13,6 +13,7 @@ final class LogEntryViewModel: ObservableObject {
     
     @Published var currentLog: String = ""
     @Published private(set) var entryLog: [WeightEntryModel] = []
+    @Published private(set) var entryDictionary: [Date: Double] = [:]
 
     private let context: NSManagedObjectContext
 
@@ -36,9 +37,11 @@ final class LogEntryViewModel: ObservableObject {
 
         do {
             entryLog = try context.fetch(request).compactMap { $0.toModel() }
+            entryDictionary = Dictionary(uniqueKeysWithValues: entryLog.map { (Calendar.current.startOfDay(for: $0.date), $0.weight) })
         } catch {
             print("Error - Unable to fetch data:", error)
             entryLog = []
+            entryDictionary = [:]
         }
     }
 
