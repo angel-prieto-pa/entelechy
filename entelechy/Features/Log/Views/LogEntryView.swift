@@ -20,8 +20,7 @@ struct LogEntryView: View {
         VStack(spacing: AppLayout.sectionSpacing) {
             
             // Title
-            Text("Log Weight")
-                .font(.title2.weight(.semibold))
+            PageTitleText(title: "Log Weight")
 
             // Input Box
             input

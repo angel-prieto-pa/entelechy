@@ -17,9 +17,7 @@ struct HistoryLogView: View {
         VStack(spacing: AppLayout.pageSpacing) {
             HistoryHeaderView(onBack: { dismiss() })
 
-            Text("History")
-                .font(.system(.largeTitle, design: .serif))
-                .fontWeight(.semibold)
+            PageTitleText(title: "History")
                 .padding(.top, AppLayout.titleTopPadding)
 
             TabView {

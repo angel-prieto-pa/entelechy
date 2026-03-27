@@ -91,9 +91,7 @@ private struct ProgressPlaceholderView: View {
         VStack(spacing: AppLayout.pageSpacing) {
             ProgressHeaderView(onBack: { dismiss() })
 
-            Text("Progress")
-                .font(.system(.largeTitle, design: .serif))
-                .fontWeight(.semibold)
+            PageTitleText(title: "Progress")
                 .padding(.top, AppLayout.titleTopPadding)
 
             Text("Coming soon")
