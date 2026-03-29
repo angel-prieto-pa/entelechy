@@ -61,9 +61,9 @@ enum AppLayout {
     static let calendarTodayUnderlineWidth: CGFloat = 18
     static let calendarTodayUnderlineHeight: CGFloat = 2
 
-    static let floatingButtonSize: CGFloat = 56
-    static let floatingButtonInset: CGFloat = AppLayout.floatingButtonSize
-    static let floatingButtonBottomInset: CGFloat = 8
+    static let floatingButtonSize: CGFloat = 55
+    static let floatingButtonInset: CGFloat = 50
+//    static let floatingButtonBottomInset: CGFloat = 8
     static let floatingButtonShadowRadius: CGFloat = 8
     static let floatingButtonShadowYOffset: CGFloat = 4
     static let floatingButtonIndicatorSize: CGFloat = 10

@@ -48,6 +48,8 @@ struct HistoryCalendarView: View {
             // Left Arrow
             Button(action: { displayedMonth = calendar.date(byAdding: .month, value: -1, to: displayedMonth) ?? displayedMonth }) {
                 Image(systemName: "chevron.left")
+                    .foregroundStyle(AppColors.accent)
+                    .font(.system(size: 18, weight: .semibold))
             }
             
             Spacer()
@@ -61,6 +63,8 @@ struct HistoryCalendarView: View {
             // Right Arrow
             Button(action: { displayedMonth = calendar.date(byAdding: .month, value: 1, to: displayedMonth) ?? displayedMonth }) {
                 Image(systemName: "chevron.right")
+                    .foregroundStyle(AppColors.accent)
+                    .font(.system(size: 18, weight: .semibold))
             }
         }
         

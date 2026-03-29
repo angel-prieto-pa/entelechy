@@ -21,23 +21,22 @@ struct HomeView: View {
     }
 
     var body: some View {
-        ZStack {
-            VStack(spacing: AppLayout.pageSpacing) {
-                
-                appTitle
-                
-                Spacer()
-                
-                LogEntryView(viewModel: viewModel)
-                
-                Spacer()
-                Spacer()
-                
-                floatingButtons
-                
-            }
-
+            
+        VStack() {
+            
+            appTitle
+            
+            Spacer()
+            
+            LogEntryView(viewModel: viewModel)
+            
+            Spacer()
+            Spacer()
+            
+            floatingButtons
+            
         }
+            
     }
 
     // Title
@@ -49,36 +48,32 @@ struct HomeView: View {
     }
 
     private var floatingButtons: some View {
-        
-        VStack {
             
-            HStack {
+        HStack {
                 
-                // History
-                CircleButton(
-                    image: Image(systemName: "clock.arrow.trianglehead.counterclockwise.rotate.90"),
-                    action: { isHistoryPresented = true },
-                    isPresented: $isHistoryPresented
-                ) {
-                    HistoryLogView(viewModel: viewModel)
-                }
-                
-
-                Spacer()
-                
-                // Progress
-                CircleButton(
-                    image: Image(systemName: "chart.line.uptrend.xyaxis"),
-                    action: { isProgressPresented = true },
-                    isPresented: $isProgressPresented
-                ) {
-                    ProgressPlaceholderView()
-                }
-
+            // History
+            CircleButton(
+                image: Image(systemName: "clock.arrow.trianglehead.counterclockwise.rotate.90"),
+                action: { isHistoryPresented = true },
+                isPresented: $isHistoryPresented
+            ) {
+                HistoryView(viewModel: viewModel)
             }
-            .padding(.horizontal, AppLayout.floatingButtonInset)
-            .padding(.bottom, AppLayout.floatingButtonBottomInset)
+
+            Spacer()
+                
+            // Progress
+            CircleButton(
+                image: Image(systemName: "chart.line.uptrend.xyaxis"),
+                action: { isProgressPresented = true },
+                isPresented: $isProgressPresented
+            ) {
+                ProgressPlaceholderView()
+            }
+
         }
+        .padding(.horizontal, AppLayout.floatingButtonInset)
+            
         
     }
 
