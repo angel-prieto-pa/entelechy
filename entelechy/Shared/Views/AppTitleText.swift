@@ -20,7 +20,7 @@ struct AppTitleText: View {
         Text("entelechy")
             .font(.system(.largeTitle, design: .serif))
             .fontWeight(.semibold)
-            .padding(.top, AppLayout.titleTopPadding)
+            .padding(.vertical, AppLayout.titleTopPadding)
             .opacity(display ? 1 : 0)
         
     }

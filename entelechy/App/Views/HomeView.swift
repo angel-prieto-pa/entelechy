@@ -9,6 +9,7 @@ import SwiftUI
 import CoreData
 
 struct HomeView: View {
+    
     private enum ActiveOverlay {
         case history
         case progress
@@ -16,34 +17,42 @@ struct HomeView: View {
 
     @StateObject private var viewModel: LogEntryViewModel
     @State private var activeOverlay: ActiveOverlay?
+    
+    /* init */
 
     init(context: NSManagedObjectContext) {
         // View Model relies on persistence container context to mangae data.
         _viewModel = StateObject(wrappedValue: LogEntryViewModel(context: context))
     }
+    
+    /* body */
 
     var body: some View {
+        
         ZStack {
             VStack {
+                
+                // App Title
                 AppTitleText()
 
-                Spacer()
-
+                // Log
                 LogEntryView(viewModel: viewModel)
 
-                Spacer()
-                Spacer()
-
+                // Buttons
                 floatingButtons
+                
             }
 
+            // Overlay Vies
             if let activeOverlay {
                 overlayView(for: activeOverlay)
                     .transition(.move(edge: .leading).combined(with: .opacity))
                     .zIndex(1)
             }
+            
         }
         .animation(.easeInOut(duration: 0.25), value: activeOverlay)
+        
     }
 
     private var floatingButtons: some View {

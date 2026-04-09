@@ -43,13 +43,13 @@ enum AppLayout {
     static let pageSpacing: CGFloat = 16
     static let sectionSpacing: CGFloat = 20
     static let titleTopPadding: CGFloat = 50
+    
+    static let titleSpacer: CGFloat = 25
 
     static let buttonVerticalPadding: CGFloat = 10
     static let buttonCornerRadius: CGFloat = 14
 
-    static let inputCornerRadius: CGFloat = 28
-    static let inputHeight: CGFloat = 112
-    static let inputFontSize: CGFloat = 56
+
     static let inputShadowRadius: CGFloat = 10
     static let inputShadowYOffset: CGFloat = 6
 

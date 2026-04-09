@@ -23,12 +23,15 @@ struct HistoryView: View {
 
     var body: some View {
         
-        VStack(spacing: AppLayout.pageSpacing) {
+        VStack() {
             
+            // Header
             ZStack {
                 
+                // App Title Space
                 AppTitleText(display: false)
-
+                
+                // Back Button
                 HStack {
                     
                     Spacer()
@@ -39,12 +42,15 @@ struct HistoryView: View {
                     )
                     
                 }
+                .padding(.horizontal, AppLayout.floatingButtonInset)
                 
             }
 
             // Title
             PageTitleText(title: "History")
-                .padding(.top, AppLayout.titleTopPadding)
+            
+            Spacer()
+                .frame(maxHeight: AppLayout.titleSpacer)
 
             // Appropriate View
             ZStack {
@@ -60,6 +66,7 @@ struct HistoryView: View {
                 }
             }
 //            .animation(.easeInOut(duration: 0.25), value: selectedTab)
+//            .padding()
 
             Spacer()
 
@@ -67,7 +74,7 @@ struct HistoryView: View {
             HistoryTabBarView(selectedTab: $selectedTab)
             
         }
-        .padding()
+//        .padding()
         .background(Color(.systemBackground))
     }
 }
@@ -119,11 +126,4 @@ private struct HistoryTabBarView: View {
         .buttonStyle(.plain)
         
     }
-}
-
-#Preview {
-    HistoryView(
-        viewModel: LogEntryViewModel(context: PersistenceController.shared.container.viewContext),
-        onClose: {}
-    )
 }

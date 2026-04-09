@@ -9,80 +9,114 @@ import SwiftUI
 
 struct LogEntryView: View {
     
+    /* variables */
+    
     @ObservedObject var viewModel: LogEntryViewModel
     
-    // TODO: Decide if I want to have page specific values or general.
-    @ScaledMetric(relativeTo: .title) private var inputHeight: CGFloat = AppLayout.inputHeight
-    @ScaledMetric(relativeTo: .title) private var inputCornerRadius: CGFloat = AppLayout.inputCornerRadius
-    @ScaledMetric(relativeTo: .title) private var inputFontSize: CGFloat = AppLayout.inputFontSize
+    @ScaledMetric(relativeTo: .title) private var inputHeight: CGFloat = 115.0
+    @ScaledMetric(relativeTo: .title) private var inputCornerRadius: CGFloat = 30.0
+    @ScaledMetric(relativeTo: .title) private var inputLineWidth: CGFloat = 2.5
+    @ScaledMetric(relativeTo: .title) private var inputFontSize: CGFloat = 55.0
+    
+    private let inputVerticalPadding: CGFloat = 5.0
+    private let inputHorizontalPadding: CGFloat = 0.75 * AppLayout.floatingButtonInset
+    
+    private let defaultText: String = "0.0"
+    
+    /* body */
 
     var body: some View {
-        VStack(spacing: AppLayout.sectionSpacing) {
+        VStack() {
             
             // Title
             PageTitleText(title: "Log Weight")
+            
+            Spacer()
+                .frame(maxHeight: AppLayout.titleSpacer)
 
-            // Input Box
-            input
-
-            // Submit Button (Log)
-            Button(action: {
-                viewModel.submitWeight()
-            }) {
-                Text("Log")
-                    .font(.headline)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, AppLayout.buttonVerticalPadding)
-                    .background(AppColors.accent)
-                    .foregroundColor(.white)
-                    .cornerRadius(AppLayout.buttonCornerRadius)
+            Group {
+                // Input Box
+                InputBox
+                
+                // Input Button
+                InputButton
             }
-            .padding(.horizontal)
-//            .disabled(!viewModel.isSubmitEnabled)
-//
-//            List(viewModel.entryLog) { entry in
-//                HStack {
-//                    Text("\(entry.weight, specifier: "%.1f") \(viewModel.unitLabel)")
-//                    Spacer()
-//                    Text(entry.date, style: .date)
-//                        .foregroundColor(.secondary)
-//                }
-//            }
-        }
-        .padding()
-    }
+            .padding(.vertical, self.inputVerticalPadding)
+            .padding(.horizontal, self.inputHorizontalPadding)
+            
+//            .padding(.horizontal)
+            //            .disabled(!viewModel.isSubmitEnabled)
+            //
+            //            List(viewModel.entryLog) { entry in
+            //                HStack {
+            //                    Text("\(entry.weight, specifier: "%.1f") \(viewModel.unitLabel)")
+            //                    Spacer()
+            //                    Text(entry.date, style: .date)
+            //                        .foregroundColor(.secondary)
+            //                }
+            //            }
+            
+            Spacer()
 
-    // Input
-    private var input: some View {
-        /* Box where user logs weight each day. */
+        }
+
+    }
+    
+    /* view components */
+
+    // Input Box
+    private var InputBox: some View {
+        /* Box with text field to log weight and show unit of weight. */
         
         ZStack {
             
             // Outer Box
-            RoundedRectangle(cornerRadius: inputCornerRadius, style: .continuous)
+            RoundedRectangle(cornerRadius: self.inputCornerRadius, style: .continuous)
                 .fill(Color(.systemBackground))
                 .overlay(
-                    RoundedRectangle(cornerRadius: inputCornerRadius, style: .continuous)
-                        .stroke(Color(.separator), lineWidth: 2.5)
+                    RoundedRectangle(cornerRadius: self.inputCornerRadius, style: .continuous)
+                        .stroke(Color(.separator), lineWidth: self.inputLineWidth)
                 )
-                .frame(height: inputHeight)
-                .padding(.horizontal)
+                .frame(height: self.inputHeight)
 
             // Text Field
-            VStack(spacing: 4) {
-                TextField("0.0", text: $viewModel.currentLog)
+            VStack() {
+                
+                // Weight Text
+                TextField(self.defaultText, text: $viewModel.currentLog)
                     .keyboardType(.decimalPad)
-                    .font(.system(size: inputFontSize, weight: .semibold))
+                    .font(.system(size: self.inputFontSize, weight: .semibold))
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: .infinity)
                     .onChange(of: viewModel.currentLog) { _, newValue in
                         viewModel.updateInput(newValue)
                     }
 
+                // Label Text
                 Text(viewModel.unitLabel)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
+                
             }
         }
     }
+    
+    // Input Button
+    private var InputButton: some View {
+        /* Button to log weight from text box. */
+        
+        Button(action: {
+            viewModel.submitWeight()
+        }) {
+            Text("Log")
+                .font(.headline)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, AppLayout.buttonVerticalPadding)
+                .background(AppColors.accent)
+                .foregroundColor(.white)
+                .cornerRadius(AppLayout.buttonCornerRadius)
+        }
+        
+    }
+    
 }
