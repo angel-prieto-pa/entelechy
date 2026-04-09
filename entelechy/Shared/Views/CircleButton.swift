@@ -7,14 +7,12 @@
 
 import SwiftUI
 
-struct CircleButton<Content: View>: View {
-    
+struct CircleButton: View {
     let image: Image
     let action: () -> Void
-    @Binding var isPresented: Bool
-    let viewPresented: () -> Content
 
     var body: some View {
+        
         Button(action: action) {
             Circle()
                 .fill(Color(.secondarySystemBackground))
@@ -25,7 +23,6 @@ struct CircleButton<Content: View>: View {
                         .font(.system(size: 20, weight: .semibold))
                 )
         }
-        .fullScreenCover(isPresented: $isPresented, content: viewPresented)
     }
     
 }

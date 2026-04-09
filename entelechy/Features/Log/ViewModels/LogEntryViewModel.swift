@@ -37,7 +37,10 @@ final class LogEntryViewModel: ObservableObject {
 
         do {
             entryLog = try context.fetch(request).compactMap { $0.toModel() }
-            entryDictionary = Dictionary(uniqueKeysWithValues: entryLog.map { (Calendar.current.startOfDay(for: $0.date), $0.weight) })
+            entryDictionary = Dictionary(
+                entryLog.map { (Calendar.current.startOfDay(for: $0.date), $0.weight) },
+                uniquingKeysWith: { _, old in old }
+            )
         } catch {
             print("Error - Unable to fetch data:", error)
             entryLog = []

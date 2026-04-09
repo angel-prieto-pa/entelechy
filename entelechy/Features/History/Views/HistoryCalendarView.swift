@@ -33,6 +33,7 @@ struct HistoryCalendarView: View {
             
         }
         .padding()
+        .compositingGroup()
         
     }
     
@@ -73,8 +74,8 @@ struct HistoryCalendarView: View {
     // Calendar Grid
     private var calendarGrid: some View {
         
-        let days: [Date] = daysInMonth(displayedMonth)
-        let leadingBlanks: Int = leadingBlankDays(displayedMonth)
+//        let days: [Date] = daysInMonth(displayedMonth)
+//        let leadingBlanks: Int = leadingBlankDays(displayedMonth)
         
         return VStack(spacing: AppLayout.calendarRowSpacing) {
             
@@ -88,54 +89,21 @@ struct HistoryCalendarView: View {
                 }
             }
 
-            // Calendar Grid
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: AppLayout.calendarGridSpacing) {
-                
-                // Leading Days / Blank Spaces
-                ForEach(0..<leadingBlanks, id: \.self) { _ in
-                    Color.clear
-                        .frame(height: daySize)
-                }
-
-                // Days
-                ForEach(days, id: \.self) { date in
-                    
-                    // Sytles based on whether there is a log for that day and if date is currently selected.
-                    // Filled - date is logged. Outlined - date is currently selected (regardless of having a log or not).
-                    // Underlined - current day.
-                    let hasEntry: Bool = hasEntryOn(date)
-                    let isSelected: Bool = isSelectedOn(date)
-                    let isToday: Bool = calendar.isDateInToday(date)
-                    
-                    Button(action: { selectedDate = date }) {
-                        VStack(spacing: AppLayout.calendarDayContentSpacing) {
-                            Text("\(calendar.component(.day, from: date))")
-                                .font(.title3.weight(.semibold))
-                                .foregroundStyle(hasEntry && !isSelected ? .white : .primary)
-                                .frame(width: daySize, height: daySize)
-                                .background(
-                                    Circle()
-                                        .fill(hasEntry && !isSelected ? AppColors.accent : Color.clear)
-                                )
-                                .overlay(
-                                    Circle()
-                                        .stroke(isSelected ? AppColors.accent : Color.clear, lineWidth: AppLayout.calendarDayStrokeWidth)
-                                )
-                                .overlay(alignment: .bottom) {
-                                    if isToday {
-                                        Rectangle()
-                                            .fill(AppColors.accent)
-                                            .frame(width: AppLayout.calendarTodayUnderlineWidth, height: AppLayout.calendarTodayUnderlineHeight)
-                                            .cornerRadius(AppLayout.calendarTodayUnderlineHeight / 2)
-                                            .offset(y: 6)
-                                    }
+            Grid(horizontalSpacing: AppLayout.calendarGridSpacing, verticalSpacing: AppLayout.calendarGridSpacing) {
+                ForEach(Array(calendarGridRows.enumerated()), id: \.offset) { _, row in
+                    GridRow {
+                        ForEach(Array(row.enumerated()), id: \.offset) { _, cell in
+                            Group {
+                                if let date = cell {
+                                    calendarDayButton(for: date)
+                                } else {
+                                    Color.clear
+                                        .frame(width: daySize, height: daySize)
                                 }
+                            }
                         }
-                        .frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(.plain)
                 }
-                
             }
         }
     }
@@ -206,6 +174,15 @@ struct HistoryCalendarView: View {
         })
     }
 
+    private var calendarGridRows: [[Date?]] {
+        let cells = Array(repeating: Optional<Date>.none, count: leadingBlankDays(displayedMonth)) + daysInMonth(displayedMonth).map(Optional.some)
+        return stride(from: 0, to: cells.count, by: 7).map { index in
+            let endIndex = min(index + 7, cells.count)
+            let row = Array(cells[index..<endIndex])
+            return row + Array(repeating: nil, count: max(0, 7 - row.count))
+        }
+    }
+
     private func hasEntryOn(_ date: Date) -> Bool {
         /* Returns whether there is a log for date provided. */
         loggedDaySet.contains(calendar.startOfDay(for: date))
@@ -215,5 +192,39 @@ struct HistoryCalendarView: View {
         /* Returns whether the date provided is currently selected. */
         guard let selectedDate else { return false }
         return calendar.isDate(selectedDate, inSameDayAs: date)
+    }
+
+    private func calendarDayButton(for date: Date) -> some View {
+        let hasEntry: Bool = hasEntryOn(date)
+        let isSelected: Bool = isSelectedOn(date)
+        let isToday: Bool = calendar.isDateInToday(date)
+
+        return Button(action: { selectedDate = date }) {
+            VStack(spacing: AppLayout.calendarDayContentSpacing) {
+                Text("\(calendar.component(.day, from: date))")
+                    .font(.title3.weight(.semibold))
+                    .foregroundStyle(hasEntry && !isSelected ? .white : .primary)
+                    .frame(width: daySize, height: daySize)
+                    .background(
+                        Circle()
+                            .fill(hasEntry && !isSelected ? AppColors.accent : Color.clear)
+                    )
+                    .overlay(
+                        Circle()
+                            .stroke(isSelected ? AppColors.accent : Color.clear, lineWidth: AppLayout.calendarDayStrokeWidth)
+                    )
+                    .overlay(alignment: .bottom) {
+                        if isToday {
+                            Rectangle()
+                                .fill(AppColors.accent)
+                                .frame(width: AppLayout.calendarTodayUnderlineWidth, height: AppLayout.calendarTodayUnderlineHeight)
+                                .cornerRadius(AppLayout.calendarTodayUnderlineHeight / 2)
+                                .offset(y: 6)
+                        }
+                    }
+            }
+            .frame(maxWidth: .infinity)
+        }
+        .buttonStyle(.plain)
     }
 }

@@ -17,36 +17,28 @@ struct HistoryView: View {
 
     @ObservedObject var viewModel: LogEntryViewModel
     
-    @Environment(\.dismiss) private var dismiss
-    
+    let onClose: () -> Void
+
     @State private var selectedTab: Tab = .calendar
 
     var body: some View {
         
         VStack(spacing: AppLayout.pageSpacing) {
             
-            HStack {
+            ZStack {
                 
-                // Exit Button
-                Button(action: { dismiss() }) {
-                    
-                    Circle()
-                        .fill(AppColors.floatingButtonBackground)
-                        .frame(width: AppLayout.floatingButtonSize, height: AppLayout.floatingButtonSize)
-                        .shadow(
-                            color: AppColors.inputShadow,
-                            radius: AppLayout.floatingButtonShadowRadius,
-                            x: 0,
-                            y: AppLayout.floatingButtonShadowYOffset
-                        )
-                        .overlay(
-                            Image(systemName: "chevron.left")
-                                .foregroundColor(AppColors.accent)
-                                .font(.system(size: 18, weight: .semibold))
-                        )
-                }
+                AppTitleText(display: false)
 
-                Spacer()
+                HStack {
+                    
+                    Spacer()
+
+                    CircleButton(
+                        image: Image(systemName: "chevron.forward"),
+                        action: { onClose() }
+                    )
+                    
+                }
                 
             }
 
@@ -54,26 +46,29 @@ struct HistoryView: View {
             PageTitleText(title: "History")
                 .padding(.top, AppLayout.titleTopPadding)
 
-            // View with Tab Bar
-            Group {
-                
-                switch selectedTab {
-                case .calendar:
-                    HistoryCalendarView(viewModel: viewModel)
-                case .entries:
-                    HistoryLogView(viewModel: viewModel)
+            // Appropriate View
+            ZStack {
+                Group {
+                    
+                    switch selectedTab {
+                    case .calendar:
+                        HistoryCalendarView(viewModel: viewModel)
+                    case .entries:
+                        HistoryLogView(viewModel: viewModel)
+                    }
+                    
                 }
-                
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+//            .animation(.easeInOut(duration: 0.25), value: selectedTab)
+
+            Spacer()
+
+            // Tab Bar
+            HistoryTabBarView(selectedTab: $selectedTab)
+            
         }
         .padding()
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(Color(.systemBackground))
-        .safeAreaInset(edge: .bottom) {
-            HistoryTabBarView(selectedTab: $selectedTab)
-        }
-        
     }
 }
 
@@ -124,4 +119,11 @@ private struct HistoryTabBarView: View {
         .buttonStyle(.plain)
         
     }
+}
+
+#Preview {
+    HistoryView(
+        viewModel: LogEntryViewModel(context: PersistenceController.shared.container.viewContext),
+        onClose: {}
+    )
 }

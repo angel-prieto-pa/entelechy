@@ -9,11 +9,13 @@ import SwiftUI
 import CoreData
 
 struct HomeView: View {
-    
+    private enum ActiveOverlay {
+        case history
+        case progress
+    }
+
     @StateObject private var viewModel: LogEntryViewModel
-    
-    @State private var isHistoryPresented = false
-    @State private var isProgressPresented = false
+    @State private var activeOverlay: ActiveOverlay?
 
     init(context: NSManagedObjectContext) {
         // View Model relies on persistence container context to mangae data.
@@ -21,30 +23,27 @@ struct HomeView: View {
     }
 
     var body: some View {
-            
-        VStack() {
-            
-            appTitle
-            
-            Spacer()
-            
-            LogEntryView(viewModel: viewModel)
-            
-            Spacer()
-            Spacer()
-            
-            floatingButtons
-            
-        }
-            
-    }
+        ZStack {
+            VStack {
+                AppTitleText()
 
-    // Title
-    private var appTitle: some View {
-        Text("entelechy")
-            .font(.system(.largeTitle, design: .serif))
-            .fontWeight(.semibold)
-            .padding(.top, AppLayout.titleTopPadding)
+                Spacer()
+
+                LogEntryView(viewModel: viewModel)
+
+                Spacer()
+                Spacer()
+
+                floatingButtons
+            }
+
+            if let activeOverlay {
+                overlayView(for: activeOverlay)
+                    .transition(.move(edge: .leading).combined(with: .opacity))
+                    .zIndex(1)
+            }
+        }
+        .animation(.easeInOut(duration: 0.25), value: activeOverlay)
     }
 
     private var floatingButtons: some View {
@@ -54,37 +53,50 @@ struct HomeView: View {
             // History
             CircleButton(
                 image: Image(systemName: "clock.arrow.trianglehead.counterclockwise.rotate.90"),
-                action: { isHistoryPresented = true },
-                isPresented: $isHistoryPresented
-            ) {
-                HistoryView(viewModel: viewModel)
-            }
+                action: { present(.history) }
+            )
 
             Spacer()
                 
             // Progress
             CircleButton(
                 image: Image(systemName: "chart.line.uptrend.xyaxis"),
-                action: { isProgressPresented = true },
-                isPresented: $isProgressPresented
-            ) {
-                ProgressPlaceholderView()
-            }
-
+                action: { present(.progress) }
+            )
         }
         .padding(.horizontal, AppLayout.floatingButtonInset)
-            
         
     }
 
+    @ViewBuilder
+    private func overlayView(for overlay: ActiveOverlay) -> some View {
+        switch overlay {
+        case .history:
+            HistoryView(viewModel: viewModel, onClose: dismissOverlay)
+        case .progress:
+            ProgressPlaceholderView(close: dismissOverlay)
+        }
+    }
+
+    private func present(_ overlay: ActiveOverlay) {
+        withAnimation(.easeInOut(duration: 0.25)) {
+            activeOverlay = overlay
+        }
+    }
+
+    private func dismissOverlay() {
+        withAnimation(.easeInOut(duration: 0.25)) {
+            activeOverlay = nil
+        }
+    }
 }
 
 private struct ProgressPlaceholderView: View {
-    @Environment(\.dismiss) private var dismiss
+    let close: () -> Void
 
     var body: some View {
         VStack(spacing: AppLayout.pageSpacing) {
-            ProgressHeaderView(onBack: { dismiss() })
+            ProgressHeaderView(onBack: close)
 
             PageTitleText(title: "Progress")
                 .padding(.top, AppLayout.titleTopPadding)
@@ -94,7 +106,9 @@ private struct ProgressPlaceholderView: View {
 
             Spacer()
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .padding()
+        .background(Color(.systemBackground))
     }
 }
 
@@ -103,7 +117,7 @@ private struct ProgressHeaderView: View {
 
     var body: some View {
         HStack {
-            Button(action: onBack) {
+            Button(action: { onBack() }) {
                 Circle()
                     .fill(AppColors.floatingButtonBackground)
                     .frame(width: AppLayout.floatingButtonSize, height: AppLayout.floatingButtonSize)
