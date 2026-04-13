@@ -36,7 +36,8 @@ final class LogEntryViewModel: ObservableObject {
         request.sortDescriptors = [NSSortDescriptor(keyPath: \WeightEntry.date, ascending: false)]
 
         do {
-            entryLog = try context.fetch(request).compactMap { $0.toModel() }
+//            entryLog = try context.fetch(request).compactMap { $0.toModel() }
+            entryLog = WeightEntryModel.mockWeightData
             entryDictionary = Dictionary(
                 entryLog.map { (Calendar.current.startOfDay(for: $0.date), $0.weight) },
                 uniquingKeysWith: { _, old in old }
