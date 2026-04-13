@@ -1,24 +1,22 @@
 //
-//  HistoryView.swift
+//  ProgressView.swift
 //  entelechy
 //
-//  Created by Angel Prieto on 03/15/26.
+//  Created by Angel Prieto on 4/12/26.
 //
 
 import SwiftUI
 
-struct HistoryView: View {
+struct ProgressView: View {
     
     enum Tab {
-        case calendar
-        case entries
+        case summary
+        case chart
     }
     
     /* varibales */
-
-    @ObservedObject var viewModel: LogEntryViewModel
     
-    @State private var selectedTab: Tab = .calendar
+//    @State private var selectedTab: Tab = .summary
     
     let onClose: () -> Void
     
@@ -36,13 +34,13 @@ struct HistoryView: View {
                 
                 // Back Button
                 HStack {
-                    
-                    Spacer()
 
                     CircleButton(
-                        image: Image(systemName: "chevron.forward"),
+                        image: Image(systemName: "chevron.backward"),
                         action: { self.onClose() }
                     )
+                    
+                    Spacer()
                     
                 }
                 .padding(.horizontal, AppLayout.floatingButtonInset)
@@ -50,33 +48,34 @@ struct HistoryView: View {
             }
 
             // Title
-            PageTitleText(title: "History")
+            PageTitleText(title: "Progress")
             
             Spacer()
                 .frame(maxHeight: AppLayout.titleSpacer)
 
             // Appropriate View
-            ZStack {
-                Group {
-                    
-                    switch selectedTab {
-                    case .calendar:
-                        HistoryCalendarView(viewModel: viewModel)
-                            .padding(.horizontal, AppLayout.contentHorizontalInset)
-                    case .entries:
-                        HistoryLogView(viewModel: viewModel)
-                    }
-                    
-                }
-            }
+//            ZStack {
+//                Group {
+//                    
+//                    switch selectedTab {
+//                    case .calendar:
+//                        HistoryCalendarView(viewModel: viewModel)
+//                            .padding(.horizontal, AppLayout.contentHorizontalInset)
+//                    case .entries:
+//                        HistoryLogView(viewModel: viewModel)
+//                    }
+//                    
+//                }
+//            }
 
             Spacer()
 
             // Tab Bar
-            HistoryTabBarView(selectedTab: $selectedTab)
+//            HistoryTabBarView(selectedTab: $selectedTab)
             
         }
         .background(Color(.systemBackground))
         
     }
 }
+

@@ -49,12 +49,11 @@ struct HomeView: View {
             // Overlay Vies
             if let activeOverlay {
                 overlayView(for: activeOverlay)
-                    .transition(.move(edge: .leading).combined(with: .opacity))
                     .zIndex(1)
             }
             
         }
-        .animation(.easeInOut(duration: 0.25), value: activeOverlay)
+//        .animation(.easeInOut(duration: 0.25), value: activeOverlay)
         
     }
 
@@ -85,8 +84,10 @@ struct HomeView: View {
         switch overlay {
         case .history:
             HistoryView(viewModel: viewModel, onClose: dismissOverlay)
+                .transition(.move(edge: .leading).combined(with: .opacity))
         case .progress:
-            ProgressPlaceholderView(onClose: dismissOverlay)
+            ProgressView(onClose: dismissOverlay)
+                .transition(.move(edge: .trailing).combined(with: .opacity))
         }
     }
 
@@ -103,47 +104,6 @@ struct HomeView: View {
     }
 }
 
-private struct ProgressPlaceholderView: View {
-    let onClose: () -> Void
-
-    var body: some View {
-        VStack(spacing: AppLayout.pageSpacing) {
-            ProgressHeaderView(onBack: onClose)
-
-            PageTitleText(title: "Progress")
-                .padding(.top, AppLayout.titleTopPadding)
-
-            Text("Coming soon")
-                .foregroundStyle(.secondary)
-
-            Spacer()
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .padding()
-        .background(Color(.systemBackground))
-    }
-}
-
-private struct ProgressHeaderView: View {
-    let onBack: () -> Void
-
-    var body: some View {
-        HStack {
-            Button(action: { onBack() }) {
-                Circle()
-                    .fill(AppColors.floatingButtonBackground)
-                    .frame(width: AppLayout.floatingButtonSize, height: AppLayout.floatingButtonSize)
-                    .shadow(color: AppColors.inputShadow, radius: AppLayout.floatingButtonShadowRadius, x: 0, y: AppLayout.floatingButtonShadowYOffset)
-                    .overlay(
-                        Image(systemName: "chevron.left")
-                            .foregroundColor(AppColors.accent)
-                            .font(.system(size: 18, weight: .semibold))
-                    )
-            }
-            Spacer()
-        }
-    }
-}
 
 #Preview {
     HomeView(context: PersistenceController.shared.container.viewContext)
