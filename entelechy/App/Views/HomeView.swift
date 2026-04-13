@@ -14,6 +14,8 @@ struct HomeView: View {
         case history
         case progress
     }
+    
+    /* variables */
 
     @StateObject private var viewModel: LogEntryViewModel
     @State private var activeOverlay: ActiveOverlay?
@@ -37,9 +39,10 @@ struct HomeView: View {
 
                 // Log
                 LogEntryView(viewModel: viewModel)
+                    .padding(.horizontal, AppLayout.contentHorizontalInset)
 
                 // Buttons
-                floatingButtons
+                self.floatingButtons
                 
             }
 
@@ -83,7 +86,7 @@ struct HomeView: View {
         case .history:
             HistoryView(viewModel: viewModel, onClose: dismissOverlay)
         case .progress:
-            ProgressPlaceholderView(close: dismissOverlay)
+            ProgressPlaceholderView(onClose: dismissOverlay)
         }
     }
 
@@ -101,11 +104,11 @@ struct HomeView: View {
 }
 
 private struct ProgressPlaceholderView: View {
-    let close: () -> Void
+    let onClose: () -> Void
 
     var body: some View {
         VStack(spacing: AppLayout.pageSpacing) {
-            ProgressHeaderView(onBack: close)
+            ProgressHeaderView(onBack: onClose)
 
             PageTitleText(title: "Progress")
                 .padding(.top, AppLayout.titleTopPadding)

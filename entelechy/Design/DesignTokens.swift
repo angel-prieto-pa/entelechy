@@ -53,7 +53,7 @@ enum AppLayout {
     static let inputShadowRadius: CGFloat = 10
     static let inputShadowYOffset: CGFloat = 6
 
-    static let calendarDaySize: CGFloat = 38
+    static let calendarDaySize: CGFloat = 40
     static let calendarGridSpacing: CGFloat = 14
     static let calendarRowSpacing: CGFloat = 8
     static let calendarDayContentSpacing: CGFloat = 4
@@ -63,6 +63,9 @@ enum AppLayout {
 
     static let floatingButtonSize: CGFloat = 55
     static let floatingButtonInset: CGFloat = 50
+    
+    static let contentHorizontalInset: CGFloat = 0.75 * AppLayout.floatingButtonInset
+    static let contentVerticalPadding: CGFloat = 5.0
 //    static let floatingButtonBottomInset: CGFloat = 8
     static let floatingButtonShadowRadius: CGFloat = 8
     static let floatingButtonShadowYOffset: CGFloat = 4

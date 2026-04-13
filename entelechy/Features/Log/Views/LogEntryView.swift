@@ -36,13 +36,13 @@ struct LogEntryView: View {
 
             Group {
                 // Input Box
-                InputBox
+                self.inputBox
                 
                 // Input Button
-                InputButton
+                self.inputButton
             }
             .padding(.vertical, self.inputVerticalPadding)
-            .padding(.horizontal, self.inputHorizontalPadding)
+//            .padding(.horizontal, self.inputHorizontalPadding)
             
 //            .padding(.horizontal)
             //            .disabled(!viewModel.isSubmitEnabled)
@@ -65,7 +65,7 @@ struct LogEntryView: View {
     /* view components */
 
     // Input Box
-    private var InputBox: some View {
+    private var inputBox: some View {
         /* Box with text field to log weight and show unit of weight. */
         
         ZStack {
@@ -88,12 +88,12 @@ struct LogEntryView: View {
                     .font(.system(size: self.inputFontSize, weight: .semibold))
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: .infinity)
-                    .onChange(of: viewModel.currentLog) { _, newValue in
-                        viewModel.updateInput(newValue)
+                    .onChange(of: self.viewModel.currentLog) { _, newValue in
+                        self.viewModel.updateInput(newValue)
                     }
 
                 // Label Text
-                Text(viewModel.unitLabel)
+                Text(self.viewModel.unitLabel)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                 
@@ -102,11 +102,11 @@ struct LogEntryView: View {
     }
     
     // Input Button
-    private var InputButton: some View {
+    private var inputButton: some View {
         /* Button to log weight from text box. */
         
         Button(action: {
-            viewModel.submitWeight()
+            self.viewModel.submitWeight()
         }) {
             Text("Log")
                 .font(.headline)

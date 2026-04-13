@@ -9,63 +9,185 @@ import SwiftUI
 
 struct HistoryCalendarView: View {
     
+    /* variables */
+    
     @ObservedObject var viewModel: LogEntryViewModel
     
     @State private var displayedMonth: Date = Date()
     @State private var selectedDate: Date? = nil
+    
+    @ScaledMetric(relativeTo: .body) private var daySize: CGFloat = AppLayout.calendarDaySize
+    @ScaledMetric(relativeTo: .title3) private var chevronFontSize: CGFloat = 20.0
 
     private let calendar = Calendar.current
     
-    @ScaledMetric(relativeTo: .body) private var daySize: CGFloat = AppLayout.calendarDaySize
+    /* body */
 
     var body: some View {
         
-        VStack(spacing: AppLayout.pageSpacing) {
+        VStack(/*spacing: AppLayout.pageSpacing*/) {
             
             // Calendar Header
-            header
+            self.header
+            // Calendar Days
+            self.calendarDays
+                .padding(.vertical, AppLayout.contentVerticalPadding)
             // Calendar Grid
-            calendarGrid
+            self.calendarGrid
+                .padding(.vertical, AppLayout.contentVerticalPadding)
+                .overlay(
+                        Rectangle()
+                            .frame(height: 1)
+                            .foregroundStyle(AppColors.accent),
+                        alignment: .top
+                    )
+                .overlay(
+                        Rectangle()
+                            .frame(height: 1)
+                            .foregroundStyle(AppColors.accent),
+                        alignment: .bottom
+                    )
+            
+            Spacer()
+            
             // Log Details
-            entryDetails
+            self.entryDetails
 
             Spacer()
             
         }
-        .padding()
         .compositingGroup()
         
     }
     
+    /* helper variables */
+    
+    private var loggedDaySet: Set<Date> {
+        /* Converts arry of logged entries into a normalized set, in order to simplify checking days in which there is a log. */
+        
+        Set(self.viewModel.entryLog.map { entry in
+            calendar.startOfDay(for: entry.date)
+        })
+    }
+    
+    private var calendarGridRows: [[Date?]] {
+        /* Provides array of Optional Date objects for the days of the displayed month, including its leading blank days and empty weeks. */
+        
+        // Array of days in a month including leading blank days.
+        let cells = Array(repeating: Optional<Date>.none, count: self.leadingBlankDays(self.displayedMonth)) + self.daysInMonth(self.displayedMonth).map(Optional.some)
+        
+        // Rows of days, each of length 7.
+        let rows = stride(from: 0, to: cells.count, by: 7).map { index in
+            let endIndex = min(index + 7, cells.count)
+            let row = Array(cells[index..<endIndex])
+            return row + Array(repeating: nil, count: max(0, 7 - row.count))
+        }
+        
+        // Ensures 6 rows of weeks.
+        return rows + Array(repeating: Array(repeating: nil, count: 7), count: max(0, 6 - rows.count))
+        
+    }
+    
+    /* helper functions */
+    
     private var monthTitle: String {
         /* Computes and returns the displayed month as a string. */
-        displayedMonth.formatted(.dateTime.month(.wide).year())
+        self.displayedMonth.formatted(.dateTime.month(.wide).year())
     }
+    
+    private func daysInMonth(_ date: Date) -> [Date] {
+        /* Returns array of dates in the month of the provided date. */
+        
+        guard let monthInterval: DateInterval = self.calendar.dateInterval(of: .month, for: date) else { return [] }
+        
+        var dates: [Date] = []
+        
+        var current = monthInterval.start
+        while current < monthInterval.end {
+            dates.append(current)
+            current = self.calendar.date(byAdding: .day, value: 1, to: current) ?? current
+        }
+        
+        return dates
+        
+    }
+    
+    private func leadingBlankDays(_ date: Date) -> Int {
+        /* Returns leading blank days for first week of the month, based on the day of the week the month starts on. */
+        
+        guard let monthStart: Date = self.calendar.dateInterval(of: .month, for: date)?.start else { return 0 }
+        
+        let weekday: Int = self.calendar.component(.weekday, from: monthStart)
+        
+        return (weekday - self.calendar.firstWeekday + 7) % 7
+        
+    }
+    
+    private func hasEntryOn(_ date: Date) -> Bool {
+        /* Returns whether there is a log for date provided. */
+        
+        self.loggedDaySet.contains(self.calendar.startOfDay(for: date))
+    }
+
+    private func isSelectedOn(_ date: Date) -> Bool {
+        /* Returns whether the date provided is currently selected. */
+        
+        guard let selectedDate else { return false }
+        return self.calendar.isDate(selectedDate, inSameDayAs: date)
+    }
+    
+    
+    /* view components */
 
     // Calendar Header
     private var header: some View {
         
-        HStack {
-            // Left Arrow
-            Button(action: { displayedMonth = calendar.date(byAdding: .month, value: -1, to: displayedMonth) ?? displayedMonth }) {
-                Image(systemName: "chevron.left")
-                    .foregroundStyle(AppColors.accent)
-                    .font(.system(size: 18, weight: .semibold))
+        Grid(horizontalSpacing: 0.0, verticalSpacing: 0.0) {
+            GridRow {
+                
+                // Left Arrow
+                Button(action: { displayedMonth = calendar.date(byAdding: .month, value: -1, to: displayedMonth) ?? displayedMonth }) {
+                    Image(systemName: "chevron.left")
+                        .foregroundStyle(AppColors.accent)
+                        .font(.system(size: 18, weight: .semibold))
+                }
+                .frame(maxWidth: .infinity)
+                
+                // Month
+                Text(monthTitle)
+                    .font(.title3.weight(.semibold))
+                    .lineLimit(1)
+                    .gridCellColumns(5)
+                    .frame(maxWidth: .infinity)
+                
+                // Right Arrow
+                Button(action: { displayedMonth = calendar.date(byAdding: .month, value: 1, to: displayedMonth) ?? displayedMonth })
+                {
+                    Image(systemName: "chevron.right")
+                        .foregroundStyle(AppColors.accent)
+                        .font(.system(size: 18, weight: .semibold))
+                }
+                .frame(maxWidth: .infinity)
+                
             }
-            
-            Spacer()
-            
-            // Month
-            Text(monthTitle)
-                .font(.title3.weight(.semibold))
-            
-            Spacer()
-            
-            // Right Arrow
-            Button(action: { displayedMonth = calendar.date(byAdding: .month, value: 1, to: displayedMonth) ?? displayedMonth }) {
-                Image(systemName: "chevron.right")
-                    .foregroundStyle(AppColors.accent)
-                    .font(.system(size: 18, weight: .semibold))
+        }
+
+    }
+    
+    private var calendarDays: some View {
+        
+        // Days of the Week
+        Grid(horizontalSpacing: 0.0, verticalSpacing: 0.0) {
+            GridRow {
+                
+                // Letter
+                ForEach(Array(self.calendar.veryShortWeekdaySymbols.enumerated()), id: \.offset) { _, symbol in
+                    Text(symbol.uppercased())
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
+                .frame(maxWidth: .infinity)
+                
             }
         }
         
@@ -73,62 +195,62 @@ struct HistoryCalendarView: View {
 
     // Calendar Grid
     private var calendarGrid: some View {
-        
-//        let days: [Date] = daysInMonth(displayedMonth)
-//        let leadingBlanks: Int = leadingBlankDays(displayedMonth)
-        
-        return VStack(spacing: AppLayout.calendarRowSpacing) {
             
-            // Days of the Week
-            HStack {
-                ForEach(calendar.veryShortWeekdaySymbols, id: \.self) { symbol in
-                    Text(symbol.uppercased())
-                        .font(.subheadline.weight(.semibold))
-                        .frame(maxWidth: .infinity)
-                        .foregroundStyle(.secondary)
-                }
-            }
-
-            Grid(horizontalSpacing: AppLayout.calendarGridSpacing, verticalSpacing: AppLayout.calendarGridSpacing) {
-                ForEach(Array(calendarGridRows.enumerated()), id: \.offset) { _, row in
+        // Day Grid
+        Grid(horizontalSpacing: 0.0, verticalSpacing: 0.0) {
+            
+            ForEach(Array(self.calendarGridRows.enumerated()), id: \.offset) { _, row in
+                
+                Group {
                     GridRow {
+                        
                         ForEach(Array(row.enumerated()), id: \.offset) { _, cell in
+                            
+                            // Calendar Day
                             Group {
                                 if let date = cell {
-                                    calendarDayButton(for: date)
+                                    self.calendarDayButton(for: date)
                                 } else {
-                                    Color.clear
-                                        .frame(width: daySize, height: daySize)
+                                    Image(systemName: "circle.fill")
+                                        .font(.system(size: 2.5, weight: .medium))
+                                        .foregroundStyle(.secondary)
+                                        .frame(width: self.daySize, height: self.daySize)
                                 }
                             }
+                            .frame(maxWidth: .infinity)
+                            
                         }
                     }
+                    .frame(maxHeight: .infinity)
                 }
+                        
             }
+            
         }
+        .aspectRatio(1, contentMode: .fit)
+        
     }
 
+    // Log Details
     private var entryDetails: some View {
-        /* Entry details for selected day. */
         
         Group {
             
-            if let date = selectedDate {
+            if let date = self.selectedDate {
                 
-                if let weight = viewModel.entryDictionary[calendar.startOfDay(for: date)] {
+                if let weight = self.viewModel.entryDictionary[self.calendar.startOfDay(for: date)] {
                     
-                    VStack(spacing: 6) {
-                        Text(date.formatted(.dateTime.weekday(.wide).month().day()))
+                    VStack(spacing: AppLayout.contentVerticalPadding) {
+                        Text(date.formatted(.dateTime.weekday(.wide).month(.wide).day()))
                             .font(.subheadline.weight(.semibold))
                             .foregroundStyle(.secondary)
                         
                         
-                        Text("\(weight, specifier: "%.1f") \(viewModel.unitLabel)")
+                        Text("\(weight, specifier: "%.1f") \(self.viewModel.unitLabel)")
                             .font(.title3.weight(.semibold))
                             .foregroundStyle(.primary)
                     }
                     .frame(maxWidth: .infinity)
-                    .padding(.top, AppLayout.sectionSpacing)
                     
                 } else {
                     
@@ -142,69 +264,20 @@ struct HistoryCalendarView: View {
         }
     }
 
-    private func daysInMonth(_ date: Date) -> [Date] {
-        /* Returns array of dates in the month of the provided date. */
-        
-        guard let monthInterval: DateInterval = calendar.dateInterval(of: .month, for: date) else { return [] }
-        
-        var dates: [Date] = []
-        
-        var current = monthInterval.start
-        while current < monthInterval.end {
-            dates.append(current)
-            current = calendar.date(byAdding: .day, value: 1, to: current) ?? current
-        }
-        
-        return dates
-    }
-
-    private func leadingBlankDays(_ date: Date) -> Int {
-        /* Returns leading blank days for first week of the month, based on the day of the week the month starts on. */
-        
-        guard let monthStart: Date = calendar.dateInterval(of: .month, for: date)?.start else { return 0 }
-        
-        let weekday: Int = calendar.component(.weekday, from: monthStart)
-        return (weekday - calendar.firstWeekday + 7) % 7
-        
-    }
-
-    private var loggedDaySet: Set<Date> {
-        Set(viewModel.entryLog.map { entry in
-            calendar.startOfDay(for: entry.date)
-        })
-    }
-
-    private var calendarGridRows: [[Date?]] {
-        let cells = Array(repeating: Optional<Date>.none, count: leadingBlankDays(displayedMonth)) + daysInMonth(displayedMonth).map(Optional.some)
-        return stride(from: 0, to: cells.count, by: 7).map { index in
-            let endIndex = min(index + 7, cells.count)
-            let row = Array(cells[index..<endIndex])
-            return row + Array(repeating: nil, count: max(0, 7 - row.count))
-        }
-    }
-
-    private func hasEntryOn(_ date: Date) -> Bool {
-        /* Returns whether there is a log for date provided. */
-        loggedDaySet.contains(calendar.startOfDay(for: date))
-    }
-
-    private func isSelectedOn(_ date: Date) -> Bool {
-        /* Returns whether the date provided is currently selected. */
-        guard let selectedDate else { return false }
-        return calendar.isDate(selectedDate, inSameDayAs: date)
-    }
-
+    // Calendar Day
     private func calendarDayButton(for date: Date) -> some View {
-        let hasEntry: Bool = hasEntryOn(date)
-        let isSelected: Bool = isSelectedOn(date)
-        let isToday: Bool = calendar.isDateInToday(date)
+        
+        let hasEntry: Bool = self.hasEntryOn(date)
+        let isSelected: Bool = self.isSelectedOn(date)
+        let isToday: Bool = self.calendar.isDateInToday(date)
 
-        return Button(action: { selectedDate = date }) {
-            VStack(spacing: AppLayout.calendarDayContentSpacing) {
-                Text("\(calendar.component(.day, from: date))")
-                    .font(.title3.weight(.semibold))
+        return Button(action: { self.selectedDate = date }) {
+            VStack {
+                Text("\(self.calendar.component(.day, from: date))")
+                    .font(.title3.weight(isToday ? .bold : .medium))
+                    .scaleEffect(isToday ? 1.05 : 1.0)
                     .foregroundStyle(hasEntry && !isSelected ? .white : .primary)
-                    .frame(width: daySize, height: daySize)
+                    .frame(width: self.daySize, height: self.daySize)
                     .background(
                         Circle()
                             .fill(hasEntry && !isSelected ? AppColors.accent : Color.clear)
@@ -213,18 +286,9 @@ struct HistoryCalendarView: View {
                         Circle()
                             .stroke(isSelected ? AppColors.accent : Color.clear, lineWidth: AppLayout.calendarDayStrokeWidth)
                     )
-                    .overlay(alignment: .bottom) {
-                        if isToday {
-                            Rectangle()
-                                .fill(AppColors.accent)
-                                .frame(width: AppLayout.calendarTodayUnderlineWidth, height: AppLayout.calendarTodayUnderlineHeight)
-                                .cornerRadius(AppLayout.calendarTodayUnderlineHeight / 2)
-                                .offset(y: 6)
-                        }
-                    }
             }
-            .frame(maxWidth: .infinity)
         }
         .buttonStyle(.plain)
+        
     }
 }

@@ -14,12 +14,16 @@ struct HistoryView: View {
         case calendar
         case entries
     }
+    
+    /* varibales */
 
     @ObservedObject var viewModel: LogEntryViewModel
     
-    let onClose: () -> Void
-
     @State private var selectedTab: Tab = .calendar
+    
+    let onClose: () -> Void
+    
+    /* body */
 
     var body: some View {
         
@@ -38,7 +42,7 @@ struct HistoryView: View {
 
                     CircleButton(
                         image: Image(systemName: "chevron.forward"),
-                        action: { onClose() }
+                        action: { self.onClose() }
                     )
                     
                 }
@@ -59,14 +63,13 @@ struct HistoryView: View {
                     switch selectedTab {
                     case .calendar:
                         HistoryCalendarView(viewModel: viewModel)
+                            .padding(.horizontal, AppLayout.contentHorizontalInset)
                     case .entries:
                         HistoryLogView(viewModel: viewModel)
                     }
                     
                 }
             }
-//            .animation(.easeInOut(duration: 0.25), value: selectedTab)
-//            .padding()
 
             Spacer()
 
@@ -74,56 +77,7 @@ struct HistoryView: View {
             HistoryTabBarView(selectedTab: $selectedTab)
             
         }
-//        .padding()
         .background(Color(.systemBackground))
-    }
-}
-
-private struct HistoryTabBarView: View {
-    
-    @Binding var selectedTab: HistoryView.Tab
-
-    var body: some View {
-        
-        // Tab Bar
-        HStack(spacing: 0) {
-            tabButton(title: "Calendar", systemImage: "calendar", tab: .calendar)
-            tabButton(title: "Entries", systemImage: "list.bullet", tab: .entries)
-        }
-        .padding(2)
-        .background(
-            Capsule()
-                .fill(Color(.secondarySystemBackground))
-        )
-        .padding(.horizontal, AppLayout.floatingButtonInset)
-        .padding(.top, 8)
-        .padding(.bottom, 8)
-        .animation(nil, value: selectedTab)
-    }
-
-    private func tabButton(title: String, systemImage: String, tab: HistoryView.Tab) -> some View {
-        
-        let isSelected = selectedTab == tab
-
-        // Tab Bar Button
-        return Button(action: { selectedTab = tab }) {
-            
-            HStack(spacing: 10) {
-                Image(systemName: systemImage)
-                    .font(.system(size: 20, weight: .medium))
-
-                Text(title)
-                    .font(.body.weight(.medium))
-            }
-            .foregroundStyle(isSelected ? AppColors.accent : .secondary)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 14)
-            .background {
-                Capsule()
-                    .fill(isSelected ? Color(.systemBackground) : Color(.secondarySystemBackground))
-            }
-        }
-        .buttonStyle(.plain)
         
     }
 }
