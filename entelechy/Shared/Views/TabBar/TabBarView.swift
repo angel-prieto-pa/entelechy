@@ -1,17 +1,37 @@
 //
-//  HistoryTabBarView.swift
+//  TabBarView.swift
 //  entelechy
 //
-//  Created by Angel Prieto on 04/07/26.
+//  Created by Angel Prieto on 4/25/26.
 //
 
 import SwiftUI
 
-struct HistoryTabBarView: View {
+enum HistoryTabs {
+    case calendar
+    case entries
+}
+
+enum ProgressTabs {
+    case summary
+    case chart
+}
+
+struct TabBarItem<Tab: Hashable>: Identifiable {
+    let title: String
+    let systemImage: String
+    let tab: Tab
+
+    var id: Tab { tab }
+}
+
+struct TabBarView<Tab: Hashable>: View {
     
     /* variables */
     
-    @Binding var selectedTab: HistoryView.Tab
+    @Binding var selectedTab: Tab
+    
+    let tabItems: [TabBarItem<Tab>]
     
     @ScaledMetric(relativeTo: .body) private var tabOuterPadding: CGFloat = 2.5
     @ScaledMetric(relativeTo: .body) private var tabInnerImageHeight: CGFloat = 20.0
@@ -22,8 +42,11 @@ struct HistoryTabBarView: View {
     var body: some View {
         
         HStack() {
-            self.tabButton(title: "Calendar", systemImage: "calendar", tab: .calendar)
-            self.tabButton(title: "Entries", systemImage: "list.bullet", tab: .entries)
+            
+            ForEach(tabItems) { tabItem in
+                self.tabButton(title: tabItem.title, systemImage: tabItem.systemImage, tab: tabItem.tab)
+            }
+            
         }
         .padding(self.tabOuterPadding)
         .background(
@@ -38,7 +61,7 @@ struct HistoryTabBarView: View {
     /* view components */
 
     // Tab Button
-    private func tabButton(title: String, systemImage: String, tab: HistoryView.Tab) -> some View {
+    private func tabButton(title: String, systemImage: String, tab: Tab) -> some View {
         /* Buttons for tab view. */
         
         let isSelected = self.selectedTab == tab
@@ -69,3 +92,4 @@ struct HistoryTabBarView: View {
     }
     
 }
+

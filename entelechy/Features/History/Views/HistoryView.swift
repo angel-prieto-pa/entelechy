@@ -9,18 +9,11 @@ import SwiftUI
 
 struct HistoryView: View {
     
-    /* structs */
-    
-    enum Tab {
-        case calendar
-        case entries
-    }
-    
     /* varibales */
 
     @ObservedObject var viewModel: LogEntryViewModel
     
-    @State private var selectedTab: Tab = .calendar
+    @State private var selectedTab: HistoryTabs = .calendar
     
     let onClose: () -> Void
     
@@ -77,7 +70,10 @@ struct HistoryView: View {
             Spacer()
 
             // Tab Bar
-            HistoryTabBarView(selectedTab: $selectedTab)
+            TabBarView(selectedTab: $selectedTab, tabItems: [
+                TabBarItem<HistoryTabs>(title: "Calendar", systemImage: "calendar", tab: .calendar),
+                TabBarItem<HistoryTabs>(title: "Entries", systemImage: "list.bullet", tab: .entries)
+            ])
             
         }
         .background(Color(.systemBackground))
