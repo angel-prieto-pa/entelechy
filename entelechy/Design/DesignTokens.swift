@@ -47,7 +47,7 @@ enum AppLayout {
     static let titleSpacer: CGFloat = 25
 
     static let buttonVerticalPadding: CGFloat = 10
-    static let buttonCornerRadius: CGFloat = 14
+    static let buttonCornerRadius: CGFloat = 15
 
 
     static let inputShadowRadius: CGFloat = 10
@@ -70,4 +70,6 @@ enum AppLayout {
     static let floatingButtonShadowRadius: CGFloat = 8
     static let floatingButtonShadowYOffset: CGFloat = 4
     static let floatingButtonIndicatorSize: CGFloat = 10
+    
+    static let contentOutlineWidth: CGFloat = 2.5
 }

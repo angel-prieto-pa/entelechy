@@ -9,6 +9,8 @@ import SwiftUI
 
 struct HistoryView: View {
     
+    /* structs */
+    
     enum Tab {
         case calendar
         case entries
@@ -65,9 +67,11 @@ struct HistoryView: View {
                             .padding(.horizontal, AppLayout.contentHorizontalInset)
                     case .entries:
                         HistoryLogView(viewModel: viewModel)
+                            .padding(.horizontal, 1 * AppLayout.contentHorizontalInset)
                     }
                     
                 }
+                
             }
 
             Spacer()
