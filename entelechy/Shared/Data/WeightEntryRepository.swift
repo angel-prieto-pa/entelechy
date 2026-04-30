@@ -80,7 +80,7 @@ final class WeightEntryRepository: ObservableObject {
     }
     
     private func buildWeightWeeks() -> [WeightWeekModel] {
-        /* Returns an array of sorted WeightWeekModel instances, each week holding the sorted weight logs for the week as WeightEntryModel. */
+        /* Returns an array of sorted WeightWeekModel instances, each week holding the sorted weight logs for the week as instances of WeightEntryModel. */
 
         
         let entryLogs = self.entries
@@ -134,7 +134,7 @@ final class WeightEntryRepository: ObservableObject {
     }
     
     private func buildWeightYears() -> [WeightYearModel] {
-        /* Returns an array of sorted WeightYearModel instances, each year holding the sorted weeks for the year as WeightWeekModel. */
+        /* Returns an array of sorted WeightYearModel instances, each year holding the sorted weeks for the year as instances of  WeightWeekModel. */
         
         var years: [WeightYearModel] = []
         
