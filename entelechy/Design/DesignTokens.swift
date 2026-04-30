@@ -73,3 +73,7 @@ enum AppLayout {
     
     static let contentOutlineWidth: CGFloat = 2.5
 }
+
+enum AppInfo {
+    static let unitLabel = "lbs."
+}

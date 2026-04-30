@@ -11,7 +11,7 @@ struct HistoryLogView: View {
     
     /* variables */
 
-    @ObservedObject var viewModel: LogEntryViewModel
+    @ObservedObject private var viewModel: HistoryViewModel
     
     @ScaledMetric(relativeTo: .body) private var contentPadding: CGFloat = 10.0
     @ScaledMetric(relativeTo: .body) private var subcontentSpacing: CGFloat = 5.0
@@ -23,12 +23,12 @@ struct HistoryLogView: View {
     private var scrollViewHorizontalPadding: CGFloat {
         self.contentPadding + AppLayout.contentOutlineWidth
     }
-
-    private let calendar = Calendar.current
-
-//    init(viewModel: LogEntryViewModel) {
-//        self.viewModel = viewModel
-//    }
+    
+    /* init */
+    
+    init(viewModel: HistoryViewModel) {
+        self.viewModel = viewModel
+    }
     
     /* body */
 
@@ -38,18 +38,21 @@ struct HistoryLogView: View {
             
             LazyVStack(alignment: .leading, spacing: 0.0, pinnedViews: [.sectionHeaders]) {
                 
-                ForEach(WeightHistoryBuilder.buildWeightYears(from: self.viewModel.entryLog)) { weightYear in
+                ForEach(self.viewModel.weightYears) { weightYear in
                     
                     Section {
                         
                         ForEach(weightYear.weeks) { weightWeek in
                             
                             VStack(alignment: .leading, spacing: self.subcontentSpacing) {
+                                
+                                // Week Header
                                 Text("Week \(weightWeek.week)")
                                     .font(.subheadline.weight(.medium))
                                     .foregroundStyle(.secondary)
                                     .underline()
 
+                                // Week Logs
                                 ForEach(weightWeek.logs) { log in
                                     self.logRow(for: log)
                                 }
@@ -89,7 +92,7 @@ struct HistoryLogView: View {
         HStack {
             
             // Weight Log
-            Text("\(entry.weight, specifier: "%.1f") \(viewModel.unitLabel)")
+            Text("\(entry.weight, specifier: "%.1f") \(AppInfo.unitLabel)")
 
             Spacer()
 

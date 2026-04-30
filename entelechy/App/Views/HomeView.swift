@@ -10,6 +10,8 @@ import CoreData
 
 struct HomeView: View {
     
+    /* structures */
+    
     private enum ActiveOverlay {
         case history
         case progress
@@ -17,14 +19,29 @@ struct HomeView: View {
     
     /* variables */
 
-    @StateObject private var viewModel: LogEntryViewModel
     @State private var activeOverlay: ActiveOverlay?
+    
+    @StateObject private var repository: WeightEntryRepository
+    
+    private var logEntryViewModel: LogEntryViewModel
+    @StateObject private var historyViewModel: HistoryViewModel
+    @StateObject private var progressViewModel: ProgressViewModel
+    
+    let context: NSManagedObjectContext
     
     /* init */
 
     init(context: NSManagedObjectContext) {
         // View Model relies on persistence container context to mangae data.
-        _viewModel = StateObject(wrappedValue: LogEntryViewModel(context: context))
+        self.context = context
+        
+        let repository = WeightEntryRepository(context: context)
+        _repository = StateObject(wrappedValue: repository)
+        
+        self.logEntryViewModel = LogEntryViewModel(repository: repository)
+        _historyViewModel = StateObject(wrappedValue: HistoryViewModel(repository: repository))
+        _progressViewModel = StateObject(wrappedValue: ProgressViewModel(repository: repository))
+        
     }
     
     /* body */
@@ -38,7 +55,7 @@ struct HomeView: View {
                 AppTitleText()
 
                 // Log
-                LogEntryView(viewModel: viewModel)
+                LogEntryView(viewModel: logEntryViewModel)
                     .padding(.horizontal, AppLayout.contentHorizontalInset)
 
                 // Buttons
@@ -53,7 +70,6 @@ struct HomeView: View {
             }
             
         }
-//        .animation(.easeInOut(duration: 0.25), value: activeOverlay)
         
     }
 
@@ -83,7 +99,7 @@ struct HomeView: View {
     private func overlayView(for overlay: ActiveOverlay) -> some View {
         switch overlay {
         case .history:
-            HistoryView(viewModel: viewModel, onClose: dismissOverlay)
+            HistoryView(viewModel: self.historyViewModel, onClose: dismissOverlay)
                 .transition(.move(edge: .leading).combined(with: .opacity))
         case .progress:
             ProgressView(onClose: dismissOverlay)

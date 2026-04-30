@@ -1,15 +1,89 @@
 //
-//  WeightHistoryBuilder.swift
+//  WeightEntryRepository.swift
 //  entelechy
 //
-//  Created by Angel Prieto on 4/23/26.
+//  Created by Angel Prieto on 4/26/26.
 //
 
-import Foundation
+import Combine
+import CoreData
 
-enum WeightHistoryBuilder {
+final class WeightEntryRepository: ObservableObject {
     
-    private static func buildWeightWeeks(from entryLogs: [WeightEntryModel]) -> [WeightWeekModel] {
+    /* variables */
+    
+    @Published private(set) var entries: [WeightEntryModel]
+    @Published private(set) var weightYears: [WeightYearModel]
+
+    private let context: NSManagedObjectContext
+    private var contextObserver: NSObjectProtocol?
+    
+    /* init */
+
+    init(context: NSManagedObjectContext) {
+        
+        self.context = context
+        
+        self.entries = []
+        self.weightYears = []
+        
+        // Initialize data observer.
+        self.contextObserver = NotificationCenter.default.addObserver(
+            forName: .NSManagedObjectContextDidSave,
+            object: context,
+            queue: .main
+        ) { [weak self] _ in
+            // Update local data in the case of observed changes.
+            self?.refreshLocalData()
+        }
+
+        self.refreshLocalData()
+        
+    }
+    
+    /* functions */
+    
+    deinit {
+        if let contextObserver {
+            NotificationCenter.default.removeObserver(contextObserver)
+        }
+    }
+    
+    func refreshLocalData() {
+        /* Update local data to match Core Data. */
+        
+        do {
+            
+            self.entries = try WeightEntry.fetchEntries(from: context)
+            self.weightYears = self.buildWeightYears()
+            
+        } catch {
+            
+            print("Error - Unable to fetch data:", error)
+            
+        }
+        
+    }
+    
+    func addEntry(weight: Double, on date: Date = Date()) {
+        /* Create and save a weight entry. */
+        
+        let entry = WeightEntry(context: self.context)
+        entry.date = date
+        entry.weight = weight
+        
+        do {
+            try self.context.save()
+        } catch {
+            print("Error - Unable to save data:", error)
+        }
+    }
+    
+    private func buildWeightWeeks() -> [WeightWeekModel] {
+        /* Returns an array of sorted WeightWeekModel instances, each week holding the sorted weight logs for the week as WeightEntryModel. */
+
+        
+        let entryLogs = self.entries
         
         let calendar = Calendar.current
 
@@ -59,12 +133,12 @@ enum WeightHistoryBuilder {
         
     }
     
-    static func buildWeightYears(from entryLogs: [WeightEntryModel]) -> [WeightYearModel] {
-        /* Returns an array of WeightYearModel instances, each year holding the sorted weeks for the year as WeightWeekModel. */
+    private func buildWeightYears() -> [WeightYearModel] {
+        /* Returns an array of sorted WeightYearModel instances, each year holding the sorted weeks for the year as WeightWeekModel. */
         
-        let weeks: [WeightWeekModel] = WeightHistoryBuilder.buildWeightWeeks(from: entryLogs)
-
         var years: [WeightYearModel] = []
+        
+        let weeks = self.buildWeightWeeks()
         
         var currentYear: Int?
         var currentWeeks: [WeightWeekModel] = []
@@ -94,4 +168,6 @@ enum WeightHistoryBuilder {
         return years
         
     }
+    
+    
 }

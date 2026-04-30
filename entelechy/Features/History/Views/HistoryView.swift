@@ -9,13 +9,26 @@ import SwiftUI
 
 struct HistoryView: View {
     
+    /* structs */
+    
+    enum HistoryTabs {
+        case calendar
+        case entries
+    }
+    
     /* varibales */
 
-    @ObservedObject var viewModel: LogEntryViewModel
+    @ObservedObject private var viewModel: HistoryViewModel
+    private let onClose: () -> Void
     
     @State private var selectedTab: HistoryTabs = .calendar
     
-    let onClose: () -> Void
+    /* init */
+    
+    init(viewModel: HistoryViewModel, onClose: @escaping ()-> Void) {
+        self.viewModel = viewModel
+        self.onClose = onClose
+    }
     
     /* body */
 
@@ -56,11 +69,11 @@ struct HistoryView: View {
                     
                     switch selectedTab {
                     case .calendar:
-                        HistoryCalendarView(viewModel: viewModel)
+                        HistoryCalendarView(viewModel: self.viewModel)
                             .padding(.horizontal, AppLayout.contentHorizontalInset)
                     case .entries:
-                        HistoryLogView(viewModel: viewModel)
-                            .padding(.horizontal, 1 * AppLayout.contentHorizontalInset)
+                        HistoryLogView(viewModel: self.viewModel)
+                            .padding(.horizontal, AppLayout.contentHorizontalInset)
                     }
                     
                 }

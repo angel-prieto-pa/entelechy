@@ -5,75 +5,26 @@
 //  Created by Angel Prieto on 11/28/25.
 //
 
-import SwiftUI
-import Combine
-import CoreData
-
-final class LogEntryViewModel: ObservableObject {
+final class LogEntryViewModel {
     
-    @Published var currentLog: String = ""
-    @Published private(set) var entryLog: [WeightEntryModel] = []
-    @Published private(set) var entryDictionary: [Date: Double] = [:]
+    /* variables */
 
-    private let context: NSManagedObjectContext
+    private let repository: WeightEntryRepository
 
-    let unitLabel: String = "lbs."
-
-    init(context: NSManagedObjectContext) {
-        self.context = context
-        fetchEntries()
+    /* init */
+    
+    init(repository: WeightEntryRepository) {
+        self.repository = repository
     }
 
-    // TODO: - validate weight and disable submit after
-    var isSubmitEnabled: Bool {
-        return true
-    }
-
-    func fetchEntries() {
-        /* Fetches 'WeightEntry' objects from CoreData and updates 'entryLog' after converting data in accordance to 'WeightEntryModel'. */
-        
-        let request: NSFetchRequest<WeightEntry> = WeightEntry.fetchRequest()
-        request.sortDescriptors = [NSSortDescriptor(keyPath: \WeightEntry.date, ascending: false)]
-
-        do {
-//            entryLog = try context.fetch(request).compactMap { $0.toModel() }
-            entryLog = WeightEntryModel.mockWeightData
-            entryDictionary = Dictionary(
-                entryLog.map { (Calendar.current.startOfDay(for: $0.date), $0.weight) },
-                uniquingKeysWith: { _, old in old }
-            )
-        } catch {
-            print("Error - Unable to fetch data:", error)
-            entryLog = []
-            entryDictionary = [:]
-        }
-    }
-
-    func submitWeight() {
-        let weight = validatedWeight
-
-        let entry = WeightEntry(context: context)
-        entry.date = Date()
-        entry.weight = weight
-
-        do {
-            try context.save()
-            fetchEntries()
-        } catch {
-            print("Error - Unable to save data: ", error)
-        }
-
-        currentLog = ""
-    }
-
-    func updateInput(_ newValue: String) {
-        /* Called when user is inputting a weight log. */
-        
-        // Ensures log is sanitized.
-        self.currentLog = sanitizeInput(newValue)
+    /* public functions */
+    
+    func submitWeight(_ input: String) {
+        let weight = self.validate(input)
+        self.repository.addEntry(weight: weight)
     }
     
-    private func sanitizeInput(_ input: String) -> String {
+    func sanitize(_ input: String) -> String {
         /* Called by 'updateInput' to sanitize log being inputted. */
         
         // Return empty string in case input is empty.
@@ -107,11 +58,13 @@ final class LogEntryViewModel: ObservableObject {
 
         return whole + fractional
     }
+    
+    /* helper functions */
 
-    private var validatedWeight: Double {
-        /* Double check to validate weight and return input as a double. */
+    private func validate(_ input: String) -> Double {
+        /* Validate weight and return input as a double. */
         
-        guard let value = Double(self.currentLog), value >= 000.0, value <= 999.9 else {
+        guard let value = Double(input), value >= 000.0, value <= 999.9 else {
             // TODO: throw error
             return 0.0
         }

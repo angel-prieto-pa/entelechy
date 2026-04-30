@@ -9,14 +9,16 @@ import SwiftUI
 
 struct ProgressView: View {
     
-    enum Tab {
+    /* structs */
+    
+    enum ProgressTabs {
         case summary
         case chart
     }
     
     /* varibales */
     
-//    @State private var selectedTab: Tab = .summary
+    @State private var selectedTab: ProgressTabs = .summary
     
     let onClose: () -> Void
     
@@ -54,24 +56,29 @@ struct ProgressView: View {
                 .frame(maxHeight: AppLayout.titleSpacer)
 
             // Appropriate View
-//            ZStack {
-//                Group {
-//                    
-//                    switch selectedTab {
-//                    case .calendar:
-//                        HistoryCalendarView(viewModel: viewModel)
-//                            .padding(.horizontal, AppLayout.contentHorizontalInset)
-//                    case .entries:
-//                        HistoryLogView(viewModel: viewModel)
-//                    }
-//                    
-//                }
-//            }
+            ZStack {
+                Group {
+                    
+                    switch selectedTab {
+                    case .summary:
+                        ProgressSummaryView()
+                            .padding(.horizontal, AppLayout.contentHorizontalInset)
+                    case .chart:
+                        ProgressChartView()
+                            .padding(.horizontal, AppLayout.contentHorizontalInset)
+                    }
+                    
+                }
+                
+            }
 
             Spacer()
 
             // Tab Bar
-//            HistoryTabBarView(selectedTab: $selectedTab)
+            TabBarView(selectedTab: $selectedTab, tabItems: [
+                TabBarItem<ProgressTabs>(title: "Summary", systemImage: "text.page", tab: .summary),
+                TabBarItem<ProgressTabs>(title: "Chart", systemImage: "chart.bar.xaxis", tab: .chart)
+            ])
             
         }
         .background(Color(.systemBackground))

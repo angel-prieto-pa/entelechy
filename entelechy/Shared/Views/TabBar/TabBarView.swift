@@ -7,15 +7,7 @@
 
 import SwiftUI
 
-enum HistoryTabs {
-    case calendar
-    case entries
-}
-
-enum ProgressTabs {
-    case summary
-    case chart
-}
+/* structs */
 
 struct TabBarItem<Tab: Hashable>: Identifiable {
     let title: String
@@ -24,6 +16,8 @@ struct TabBarItem<Tab: Hashable>: Identifiable {
 
     var id: Tab { tab }
 }
+
+/* TabBarView */
 
 struct TabBarView<Tab: Hashable>: View {
     

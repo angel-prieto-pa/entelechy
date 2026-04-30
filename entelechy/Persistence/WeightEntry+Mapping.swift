@@ -5,12 +5,12 @@
 //  Created by Angel Prieto on 3/19/26.
 //
 
-import Foundation
 import CoreData
 
 extension WeightEntry {
     
     func toModel() -> WeightEntryModel? {
+        
         guard let date else { return nil }
 
         return WeightEntryModel(
@@ -19,6 +19,7 @@ extension WeightEntry {
             date: date,
             weight: weight
         )
+        
     }
     
 }

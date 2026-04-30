@@ -11,7 +11,9 @@ struct LogEntryView: View {
     
     /* variables */
     
-    @ObservedObject var viewModel: LogEntryViewModel
+    private var viewModel: LogEntryViewModel
+    
+    @State private var currentLog: String = ""
     
     @ScaledMetric(relativeTo: .title) private var inputHeight: CGFloat = 115.0
     @ScaledMetric(relativeTo: .title) private var inputCornerRadius: CGFloat = 30.0
@@ -19,9 +21,14 @@ struct LogEntryView: View {
     @ScaledMetric(relativeTo: .title) private var inputFontSize: CGFloat = 55.0
     
     private let inputVerticalPadding: CGFloat = 5.0
-    private let inputHorizontalPadding: CGFloat = 0.75 * AppLayout.floatingButtonInset
     
     private let defaultText: String = "0.0"
+    
+    /* init */
+    
+    init(viewModel: LogEntryViewModel) {
+        self.viewModel = viewModel
+    }
     
     /* body */
 
@@ -42,19 +49,6 @@ struct LogEntryView: View {
                 self.inputButton
             }
             .padding(.vertical, self.inputVerticalPadding)
-//            .padding(.horizontal, self.inputHorizontalPadding)
-            
-//            .padding(.horizontal)
-            //            .disabled(!viewModel.isSubmitEnabled)
-            //
-            //            List(viewModel.entryLog) { entry in
-            //                HStack {
-            //                    Text("\(entry.weight, specifier: "%.1f") \(viewModel.unitLabel)")
-            //                    Spacer()
-            //                    Text(entry.date, style: .date)
-            //                        .foregroundColor(.secondary)
-            //                }
-            //            }
             
             Spacer()
 
@@ -83,17 +77,17 @@ struct LogEntryView: View {
             VStack() {
                 
                 // Weight Text
-                TextField(self.defaultText, text: $viewModel.currentLog)
+                TextField(self.defaultText, text: self.$currentLog)
                     .keyboardType(.decimalPad)
                     .font(.system(size: self.inputFontSize, weight: .semibold))
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: .infinity)
-                    .onChange(of: self.viewModel.currentLog) { _, newValue in
-                        self.viewModel.updateInput(newValue)
+                    .onChange(of: self.currentLog) { _, updatedLog in
+                        self.currentLog = self.viewModel.sanitize(updatedLog)
                     }
 
                 // Label Text
-                Text(self.viewModel.unitLabel)
+                Text(AppInfo.unitLabel)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                 
@@ -106,7 +100,8 @@ struct LogEntryView: View {
         /* Button to log weight from text box. */
         
         Button(action: {
-            self.viewModel.submitWeight()
+            self.viewModel.submitWeight(self.currentLog)
+            self.currentLog = ""
         }) {
             Text("Log")
                 .font(.headline)

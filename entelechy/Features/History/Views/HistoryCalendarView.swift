@@ -11,21 +11,27 @@ struct HistoryCalendarView: View {
     
     /* variables */
     
-    @ObservedObject var viewModel: LogEntryViewModel
+    @ObservedObject private var viewModel: HistoryViewModel
     
     @State private var displayedMonth: Date = Date()
     @State private var selectedDate: Date? = nil
     
+    private let calendar = Calendar.current
+    
     @ScaledMetric(relativeTo: .body) private var daySize: CGFloat = AppLayout.calendarDaySize
     @ScaledMetric(relativeTo: .title3) private var chevronFontSize: CGFloat = 20.0
-
-    private let calendar = Calendar.current
+    
+    /* init */
+    
+    init(viewModel: HistoryViewModel) {
+        self.viewModel = viewModel
+    }
     
     /* body */
 
     var body: some View {
         
-        VStack(/*spacing: AppLayout.pageSpacing*/) {
+        VStack() {
             
             // Calendar Header
             self.header
@@ -61,14 +67,6 @@ struct HistoryCalendarView: View {
     }
     
     /* helper variables */
-    
-    private var loggedDaySet: Set<Date> {
-        /* Converts arry of logged entries into a normalized set, in order to simplify checking days in which there is a log. */
-        
-        Set(self.viewModel.entryLog.map { entry in
-            calendar.startOfDay(for: entry.date)
-        })
-    }
     
     private var calendarGridRows: [[Date?]] {
         /* Provides array of Optional Date objects for the days of the displayed month, including its leading blank days and empty weeks. */
@@ -122,14 +120,8 @@ struct HistoryCalendarView: View {
         return (weekday - self.calendar.firstWeekday + 7) % 7
         
     }
-    
-    private func hasEntryOn(_ date: Date) -> Bool {
-        /* Returns whether there is a log for date provided. */
-        
-        self.loggedDaySet.contains(self.calendar.startOfDay(for: date))
-    }
 
-    private func isSelectedOn(_ date: Date) -> Bool {
+    private func isSelected(on date: Date) -> Bool {
         /* Returns whether the date provided is currently selected. */
         
         guard let selectedDate else { return false }
@@ -146,10 +138,10 @@ struct HistoryCalendarView: View {
             GridRow {
                 
                 // Left Arrow
-                Button(action: { displayedMonth = calendar.date(byAdding: .month, value: -1, to: displayedMonth) ?? displayedMonth }) {
+                Button(action: { displayedMonth = self.calendar.date(byAdding: .month, value: -1, to: displayedMonth) ?? displayedMonth }) {
                     Image(systemName: "chevron.left")
                         .foregroundStyle(AppColors.accent)
-                        .font(.system(size: 18, weight: .semibold))
+                        .font(.system(size: self.chevronFontSize, weight: .semibold))
                 }
                 .frame(maxWidth: .infinity)
                 
@@ -161,11 +153,11 @@ struct HistoryCalendarView: View {
                     .frame(maxWidth: .infinity)
                 
                 // Right Arrow
-                Button(action: { displayedMonth = calendar.date(byAdding: .month, value: 1, to: displayedMonth) ?? displayedMonth })
+                Button(action: { displayedMonth = self.calendar.date(byAdding: .month, value: 1, to: displayedMonth) ?? displayedMonth })
                 {
                     Image(systemName: "chevron.right")
                         .foregroundStyle(AppColors.accent)
-                        .font(.system(size: 18, weight: .semibold))
+                        .font(.system(size: self.chevronFontSize, weight: .semibold))
                 }
                 .frame(maxWidth: .infinity)
                 
@@ -174,6 +166,7 @@ struct HistoryCalendarView: View {
 
     }
     
+    // Calendar Letter Days
     private var calendarDays: some View {
         
         // Days of the Week
@@ -238,7 +231,7 @@ struct HistoryCalendarView: View {
             
             if let date = self.selectedDate {
                 
-                if let weight = self.viewModel.entryDictionary[self.calendar.startOfDay(for: date)] {
+                if let weight = self.viewModel.weight(on: date) {
                     
                     VStack(spacing: AppLayout.contentVerticalPadding) {
                         Text(date.formatted(.dateTime.weekday(.wide).month(.wide).day()))
@@ -246,7 +239,7 @@ struct HistoryCalendarView: View {
                             .foregroundStyle(.secondary)
                         
                         
-                        Text("\(weight, specifier: "%.1f") \(self.viewModel.unitLabel)")
+                        Text("\(weight, specifier: "%.1f") \(AppInfo.unitLabel)")
                             .font(.title3.weight(.semibold))
                             .foregroundStyle(.primary)
                     }
@@ -267,8 +260,8 @@ struct HistoryCalendarView: View {
     // Calendar Day
     private func calendarDayButton(for date: Date) -> some View {
         
-        let hasEntry: Bool = self.hasEntryOn(date)
-        let isSelected: Bool = self.isSelectedOn(date)
+        let hasEntry: Bool = self.viewModel.hasEntry(on: date)
+        let isSelected: Bool = self.isSelected(on: date)
         let isToday: Bool = self.calendar.isDateInToday(date)
 
         return Button(action: { self.selectedDate = date }) {
