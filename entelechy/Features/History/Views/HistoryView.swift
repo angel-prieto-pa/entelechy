@@ -34,7 +34,7 @@ struct HistoryView: View {
 
     var body: some View {
         
-        VStack() {
+        VStack {
             
             // Header
             ZStack {

@@ -44,9 +44,9 @@ final class HistoryViewModel: ObservableObject {
         
     }
     
-    var weightYears: [WeightYearModel] {
-        /* Retrieves weightYears from repository. */
-        self.repository.weightYears
+    var weightYearsEnumerated: [(offset: Int, element: WeightYearModel)] {
+        /* Retrieves weightYears from repository as an enumerated array. */
+        Array(self.repository.weightYears.enumerated())
     }
     
     /* init */

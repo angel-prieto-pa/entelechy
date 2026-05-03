@@ -57,7 +57,7 @@ enum AppLayout {
     static let calendarGridSpacing: CGFloat = 14
     static let calendarRowSpacing: CGFloat = 8
     static let calendarDayContentSpacing: CGFloat = 4
-    static let calendarDayStrokeWidth: CGFloat = 2
+    static let calendarDayStrokeWidth: CGFloat = 1.0
     static let calendarTodayUnderlineWidth: CGFloat = 18
     static let calendarTodayUnderlineHeight: CGFloat = 2
 

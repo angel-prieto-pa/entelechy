@@ -31,7 +31,7 @@ struct HistoryCalendarView: View {
 
     var body: some View {
         
-        VStack() {
+        VStack {
             
             // Calendar Header
             self.header
