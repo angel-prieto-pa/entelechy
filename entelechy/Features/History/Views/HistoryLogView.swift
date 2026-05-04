@@ -70,11 +70,11 @@ struct HistoryLogView: View {
         Section {
             
             self.yearSectionContent(for: weightYear, isLastYear: isLastYear)
+                .padding(.horizontal, self.contentSpacing)
             
         } header: {
             
             self.yearHeader(for: weightYear.year)
-                .font(.subheadline.weight(.bold))
                 .padding(.bottom, self.scrollViewVerticalPadding)
                 .background(.background)
             
@@ -92,7 +92,6 @@ struct HistoryLogView: View {
             )
             
         }
-        .padding(.horizontal, self.contentSpacing)
         
     }
 
