@@ -13,6 +13,7 @@ struct WeightAverageWeekModel: Identifiable {
     var id: Date { startOfWeek }
     
     let average: Double
+    let difference: Double
 
     let week: Int
     var year: Int {

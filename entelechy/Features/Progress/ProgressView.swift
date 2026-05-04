@@ -18,15 +18,21 @@ struct ProgressView: View {
     
     /* varibales */
     
+    @ObservedObject private var viewModel: ProgressViewModel
     @State private var selectedTab: ProgressTabs = .summary
     
     let onClose: () -> Void
+    
+    init(viewModel: ProgressViewModel, onClose: @escaping () -> Void) {
+        self.viewModel = viewModel
+        self.onClose = onClose
+    }
     
     /* body */
 
     var body: some View {
         
-        VStack() {
+        VStack {
             
             // Header
             ZStack {
@@ -61,7 +67,7 @@ struct ProgressView: View {
                     
                     switch selectedTab {
                     case .summary:
-                        ProgressSummaryView()
+                        ProgressSummaryView(viewModel: self.viewModel)
                             .padding(.horizontal, AppLayout.contentHorizontalInset)
                     case .chart:
                         ProgressChartView()
@@ -85,4 +91,3 @@ struct ProgressView: View {
         
     }
 }
-

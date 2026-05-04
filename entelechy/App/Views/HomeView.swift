@@ -102,7 +102,7 @@ struct HomeView: View {
             HistoryView(viewModel: self.historyViewModel, onClose: dismissOverlay)
                 .transition(.move(edge: .leading).combined(with: .opacity))
         case .progress:
-            ProgressView(onClose: dismissOverlay)
+            ProgressView(viewModel: self.progressViewModel, onClose: dismissOverlay)
                 .transition(.move(edge: .trailing).combined(with: .opacity))
         }
     }
