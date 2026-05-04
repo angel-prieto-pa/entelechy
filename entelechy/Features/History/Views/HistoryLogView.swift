@@ -13,16 +13,12 @@ struct HistoryLogView: View {
 
     @ObservedObject private var viewModel: HistoryViewModel
     
-    @ScaledMetric(relativeTo: .body) private var contentPadding: CGFloat = 10.0
-    @ScaledMetric(relativeTo: .body) private var subcontentSpacing: CGFloat = 5.0
-    @ScaledMetric(relativeTo: .body) private var scrollViewVerticalPadding: CGFloat = AppLayout.contentVerticalPadding
+    @ScaledMetric(relativeTo: .body) private var scrollViewVerticalPadding: CGFloat = 3.0 * AppLayout.contentVerticalPadding
     
-    private let displayCornerRadius: CGFloat = 30.0
-    private let contentOutlineWidth: CGFloat = 1.5
+    @ScaledMetric(relativeTo: .body) private var contentSpacing: CGFloat = 2.0 * AppLayout.contentVerticalPadding
+    @ScaledMetric(relativeTo: .body) private var subcontentSpacing: CGFloat = AppLayout.contentVerticalPadding
     
-    private var scrollViewHorizontalPadding: CGFloat {
-        self.contentPadding + AppLayout.contentOutlineWidth
-    }
+    private let bottomSpacerHeight: CGFloat = 20.0
     
     /* init */
     
@@ -50,16 +46,16 @@ struct HistoryLogView: View {
                 
             }
             .scrollIndicators(.hidden)
-            .padding(.bottom, 15)
+            .padding(.bottom, self.scrollViewVerticalPadding)
             .overlay(
                 Rectangle()
-                    .frame(height: 1)
+                    .frame(height: AppLayout.contentOutlineHeight)
                     .foregroundStyle(AppColors.accent),
                 alignment: .bottom
             )
             
             Spacer()
-                .frame(maxHeight: 20.0)
+                .frame(maxHeight: self.bottomSpacerHeight)
             
         }
         
@@ -79,24 +75,25 @@ struct HistoryLogView: View {
             
             self.yearHeader(for: weightYear.year)
                 .font(.subheadline.weight(.bold))
-                .padding(AppLayout.contentOutlineWidth)
-                .padding(.bottom, 10)
+                .padding(.bottom, self.scrollViewVerticalPadding)
                 .background(.background)
-                
             
         }
     }
 
     // Year Section Content
     private func yearSectionContent(for weightYear: WeightYearModel, isLastYear: Bool) -> some View {
+        
         ForEach(Array(weightYear.weeks.enumerated()), id: \.element.id) { index, weightWeek in
+            
             self.weekContent(
                 for: weightWeek,
                 isLast: index == weightYear.weeks.count - 1 && !isLastYear
             )
+            
         }
-        .padding(.horizontal, self.scrollViewHorizontalPadding)
-        .padding(.vertical, self.scrollViewVerticalPadding)
+        .padding(.horizontal, self.contentSpacing)
+        
     }
 
     // Week Content
@@ -109,19 +106,22 @@ struct HistoryLogView: View {
             ForEach(weightWeek.logs) { log in
                 self.logRow(for: log)
             }
-            .padding(.horizontal, self.contentPadding)
+            .padding(.horizontal, self.contentSpacing)
+            
         }
-        .padding(.top, self.scrollViewVerticalPadding)
-        .padding(.bottom, isLast ? 20.0 : self.scrollViewVerticalPadding)
+        .padding(.top, self.subcontentSpacing)
+        .padding(.bottom, isLast ? 2.0 * self.contentSpacing : self.contentSpacing)
         
     }
 
     // Week Header
     private func weekHeader(for week: Int) -> some View {
+        
         Text("Week \(week)")
             .font(.subheadline.weight(.medium))
             .foregroundStyle(.secondary)
             .underline()
+        
     }
     
     // Log Row
@@ -150,22 +150,19 @@ struct HistoryLogView: View {
             .font(.title3.weight(.semibold))
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(Color(.systemBackground))
-            .padding(self.contentPadding)
-            .clipShape(RoundedRectangle(cornerRadius: self.displayCornerRadius, style: .continuous))
+            .padding(self.contentSpacing)
             .overlay(
                     Rectangle()
-                        .frame(height: 1)
+                        .frame(height: AppLayout.contentOutlineHeight)
                         .foregroundStyle(AppColors.accent),
                     alignment: .top
                 )
             .overlay(
                     Rectangle()
-                        .frame(height: 1)
+                        .frame(height: AppLayout.contentOutlineHeight)
                         .foregroundStyle(AppColors.accent),
                     alignment: .bottom
                 )
-            
-            
             
     }
     

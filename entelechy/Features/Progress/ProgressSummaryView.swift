@@ -15,10 +15,6 @@ struct ProgressSummaryView: View {
     
     private let displayCornerRadius: CGFloat = 30.0
     private let contentOutlineWidth: CGFloat = 1.5
-    
-    private var scrollViewHorizontalPadding: CGFloat {
-        self.contentPadding + AppLayout.contentOutlineWidth
-    }
 
     private let calendar = Calendar.current
     

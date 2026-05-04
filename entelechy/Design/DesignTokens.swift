@@ -71,7 +71,7 @@ enum AppLayout {
     static let floatingButtonShadowYOffset: CGFloat = 4
     static let floatingButtonIndicatorSize: CGFloat = 10
     
-    static let contentOutlineWidth: CGFloat = 2.5
+    static let contentOutlineHeight: CGFloat = 1.0
 }
 
 enum AppInfo {
