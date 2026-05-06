@@ -130,6 +130,18 @@ final class ProgressViewModel: ObservableObject {
         Array(self.averageWeights.enumerated())
     }
     
+    var chartEntries: [WeightEntryModel] {
+        /* Retrieves weight entries in ascending date order for plotting. */
+        self.repository.entries.sorted { $0.date < $1.date }
+    }
+    
+    var chartAverageWeeks: [WeightAverageWeekModel] {
+        /* Retrieves weekly average weights in ascending date order for plotting. */
+        self.averageWeights
+            .flatMap(\.weeks)
+            .sorted { $0.startOfWeek < $1.startOfWeek }
+    }
+    
     /* public functions */
     
     func accentColor(for week: WeightAverageWeekModel) -> Color {

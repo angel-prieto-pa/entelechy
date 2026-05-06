@@ -70,7 +70,7 @@ struct ProgressView: View {
                         ProgressSummaryView(viewModel: self.viewModel)
                             .padding(.horizontal, AppLayout.contentHorizontalInset)
                     case .chart:
-                        ProgressChartView()
+                        ProgressChartView(viewModel: self.viewModel)
                             .padding(.horizontal, AppLayout.contentHorizontalInset)
                     }
                     
