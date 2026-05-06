@@ -110,6 +110,7 @@ struct ProgressSummaryView: View {
     private func averageRow(for weightWeek: WeightAverageWeekModel) -> some View {
         
         let week = weightWeek.week
+        let dateRange = self.weekDateRangeText(for: weightWeek)
         let average = weightWeek.average
         let modifier = viewModel.differenceModifier(for: weightWeek)
         let difference = abs(weightWeek.difference)
@@ -122,8 +123,12 @@ struct ProgressSummaryView: View {
                     .font(.body.weight(.regular))
                     .foregroundStyle(.primary)
                 
-                Text("Average: \(average, specifier: "%.1f") \(AppInfo.unitLabel)")
-                    .font(.subheadline.weight(.regular))
+                Text("Dates: \(dateRange)")
+                    .font(.footnote.weight(.regular))
+                    .foregroundStyle(.secondary)
+                
+                Text(weekAverageText(for: average))
+                    .font(.footnote.weight(.regular))
                     .foregroundStyle(.secondary)
             }
 
@@ -165,6 +170,64 @@ struct ProgressSummaryView: View {
                 alignment: .bottom
             )
             
+    }
+    
+    /* helper functions */
+    
+    private func weekDateRangeText(for weightWeek: WeightAverageWeekModel) -> String {
+        /* Computes the end of the week and provides the string of what constitutes a week. */
+        
+        let calendar = Calendar.current
+        let startDate = weightWeek.startOfWeek
+        
+        let endDate: Date
+        
+        if let interval = calendar.dateInterval(of: .weekOfYear, for: startDate), let date = calendar.date(byAdding: .day, value: -1, to: interval.end) {
+            
+            let startYear = calendar.component(.year, from: startDate)
+            let endYear = calendar.component(.year, from: date)
+            
+            let end = calendar.component(.day, from: date)
+            
+            if startYear != endYear, let endOfYearDate = calendar.date(byAdding: .day, value: (-1 * end), to: date) {
+                
+                endDate = endOfYearDate
+
+            } else {
+                
+                endDate = date
+            }
+            
+        } else {
+            
+            endDate = startDate
+            
+        }
+        
+        let formatter = Date.FormatStyle()
+            .month(.abbreviated)
+            .day()
+        
+        if startDate == endDate {
+            return "\(startDate.formatted(formatter))"
+        }
+        
+        return "\(startDate.formatted(formatter)) - \(endDate.formatted(formatter))"
+        
+    }
+    
+    private func weekAverageText(for average: Double) -> AttributedString {
+        /* Creates average text for view. */
+        
+        var text = AttributedString(localized: "Average: ")
+
+        var value = AttributedString(localized: "\(average, specifier: "%.1f") \(AppInfo.unitLabel)")
+        value.font = .footnote.weight(.semibold)
+
+        text += value
+        
+        return text
+        
     }
     
 }

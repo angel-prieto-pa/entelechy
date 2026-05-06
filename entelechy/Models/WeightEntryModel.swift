@@ -25,6 +25,7 @@ extension WeightEntryModel {
         WeightEntryModel(id: NSManagedObjectID(), date: Calendar.current.date(from: DateComponents(year: 2026, month: 4, day: 3))!, weight: 99.7),
 
         WeightEntryModel(id: NSManagedObjectID(), date: Calendar.current.date(from: DateComponents(year: 2026, month: 3, day: 30))!, weight: 100.9),
+        WeightEntryModel(id: NSManagedObjectID(), date: Calendar.current.date(from: DateComponents(year: 2026, month: 3, day: 29))!, weight: 101.7),
         WeightEntryModel(id: NSManagedObjectID(), date: Calendar.current.date(from: DateComponents(year: 2026, month: 3, day: 28))!, weight: 101.5),
         WeightEntryModel(id: NSManagedObjectID(), date: Calendar.current.date(from: DateComponents(year: 2026, month: 3, day: 25))!, weight: 102.3),
         WeightEntryModel(id: NSManagedObjectID(), date: Calendar.current.date(from: DateComponents(year: 2026, month: 3, day: 22))!, weight: 99.8),
