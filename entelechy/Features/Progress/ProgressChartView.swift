@@ -92,10 +92,10 @@ struct ProgressChartView: View {
     // Picker
     private var rangePicker: some View {
         
-        Picker("Chart Range", selection: self.$viewModel.selectedPlotLength) {
-            ForEach(ProgressViewModel.PlotRange.allCases) { plotLength in
-                Text(plotLength.title)
-                    .tag(plotLength)
+        Picker("Chart Range", selection: self.$viewModel.selectedPlotTimeRange) {
+            ForEach(ProgressViewModel.PlotTimeRange.allCases) { plotRange in
+                Text(plotRange.title)
+                    .tag(plotRange)
             }
         }
         .pickerStyle(.segmented)
@@ -106,10 +106,10 @@ struct ProgressChartView: View {
     // Chart
     private func chart(entries: [WeightEntryModel], averages: [WeightAverageWeekModel], isEmptyChart: Bool) -> some View {
         
-        let xAxisDates = self.viewModel.getXAxisMarkers()
         let xDomain = self.viewModel.getXAxisDomain()
+        let yDomain = self.viewModel.getYAxisDomain()
         
-        let yDomain = self.viewModel.getYAxisDomain(entries: entries, averages: averages, isEmpty: isEmptyChart)
+        let xAxisMarkers = self.viewModel.getXAxisMarkers(for: xDomain)
         
         return Chart {
             
@@ -166,7 +166,7 @@ struct ProgressChartView: View {
             self.yAxisMarks(isHidden: isEmptyChart)
         }
         .chartXAxis {
-            self.xAxisMarks(from: xAxisDates, isHidden: isEmptyChart)
+            self.xAxisMarks(from: xAxisMarkers, isHidden: isEmptyChart)
         }
         // Chart Plot Style
         .chartPlotStyle { plotArea in
@@ -308,24 +308,24 @@ struct ProgressChartView: View {
                         self.xAxisLabelText(for: date, isHidden: true)
                     }
                     
-                } else if date == today {
-                    // Add accent color grid line for current day.
-                    
-                    AxisGridLine(stroke: self.axisStrokeStyleEmphasized)
-                        .foregroundStyle(AppColors.accent)
-                    
-                    if isTodayFirst {
-                        // Add accent color tick if current day is the start of the month.
-                        
-                        AxisTick(stroke: self.axisStrokeStyleEmphasized)
-                            .foregroundStyle(AppColors.accent)
-                    }
+//                } else if date == today {
+//                    
+//                    AxisGridLine(stroke: self.axisStrokeStyleEmphasized)
+//                        .foregroundStyle(AppColors.accent)
+//                    
+//                    if isTodayFirst {
+//                        
+//                        AxisTick(stroke: self.axisStrokeStyleEmphasized)
+//                            .foregroundStyle(AppColors.accent)
+//                    }
                     
                 } else if month == 1 {
                     // Add bold grid line, tick, and label for first of the year.
                     
                     AxisGridLine(stroke: self.axisStrokeStyleEmphasized)
+                    
                     AxisTick(stroke: self.axisStrokeStyleEmphasized)
+                    
                     AxisValueLabel(verticalSpacing: 0.5 * self.contentSpacing) {
                         self.xAxisLabelText(for: date, isEmphasized: true)
                     }
@@ -334,7 +334,9 @@ struct ProgressChartView: View {
                     // Add grid line, tick, and label to start of month based on increment level.
                     
                     AxisGridLine()
+                    
                     AxisTick()
+                    
                     AxisValueLabel(verticalSpacing: 0.5 * self.contentSpacing) {
                         self.xAxisLabelText(for: date)
                     }
@@ -365,12 +367,12 @@ struct ProgressChartView: View {
     private var xAxisLabelFormat: Date.FormatStyle {
         
         // TODO:
-        switch self.viewModel.selectedPlotLength {
-        case .lengthMonth:
+        switch self.viewModel.selectedPlotTimeRange {
+        case .rangeMonth:
             return .dateTime.month(.abbreviated).day()
-        case .lengthThreeMonth, .lengthSixMonth, .lengthYear:
+        case .rangeThreeMonth, .rangeSixMonth, .rangeYear:
             return .dateTime.month(.abbreviated)
-        case .lengthAll:
+        case .rangeAll:
             return .dateTime.month(.abbreviated)
         }
     }
