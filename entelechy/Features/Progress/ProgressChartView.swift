@@ -65,7 +65,7 @@ struct ProgressChartView: View {
                 
                 // Overlapping Empty State
                 if isEmpty {
-                    self.emptyState
+                    EmptyStateView(type: .progressChart)
                         .padding(.horizontal, 4.0 * self.contentSpacing)
                 }
                 
@@ -246,23 +246,6 @@ struct ProgressChartView: View {
                 
             }
             
-        }
-        
-    }
-    
-    // Empty State
-    private var emptyState: some View {
-        
-        VStack(alignment: .center, spacing: self.contentSpacing) {
-            Text("No chart data available.")
-                .font(.title3.weight(.semibold))
-                .foregroundStyle(.primary)
-            
-            Text("Log a few weights to see entries and weekly averages over time.")
-                .font(.subheadline.weight(.regular))
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, self.contentSpacing)
         }
         
     }

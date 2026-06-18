@@ -30,34 +30,46 @@ struct ProgressSummaryView: View {
 
     var body: some View {
         
-        let averageYears = viewModel.averageYearsEnumerated
+        let averageYears = self.viewModel.averageYearsEnumerated
+        let isEmpty = self.viewModel.averageYearsEnumerated.isEmpty
         
-        return VStack {
+        return ZStack {
             
-            ScrollView {
+            if isEmpty {
                 
-                LazyVStack(alignment: .leading, spacing: 0.0, pinnedViews: [.sectionHeaders]) {
-                    
-                    ForEach(averageYears, id: \.element.id) { index, weightYear in
-                        self.yearSection(
-                            weightYear: weightYear,
-                            isLastYear: index == averageYears.count - 1
-                        )
-                    }
-                }
+                EmptyStateView(type: .progressSummary)
                 
             }
-            .scrollIndicators(.hidden)
-            .padding(.bottom, self.scrollViewVerticalPadding)
-            .overlay(
-                Rectangle()
-                    .frame(height: AppLayout.contentOutlineHeight)
-                    .foregroundStyle(AppColors.accent),
-                alignment: .bottom
-            )
             
-            Spacer()
-                .frame(maxHeight: self.bottomSpacerHeight)
+            VStack {
+                
+                ScrollView {
+                    
+                    LazyVStack(alignment: .leading, spacing: 0.0, pinnedViews: [.sectionHeaders]) {
+                        
+                        ForEach(averageYears, id: \.element.id) { index, weightYear in
+                            self.yearSection(
+                                weightYear: weightYear,
+                                isLastYear: index == averageYears.count - 1
+                            )
+                        }
+                    }
+                    
+                }
+                .scrollIndicators(.hidden)
+                .padding(.bottom, self.scrollViewVerticalPadding)
+                .overlay(
+                    Rectangle()
+                        .frame(height: AppLayout.contentOutlineHeight)
+                        .foregroundStyle(AppColors.accent),
+                    alignment: .bottom
+                )
+                
+                Spacer()
+                    .frame(maxHeight: self.bottomSpacerHeight)
+                
+            }
+            .opacity(isEmpty ? 0.0 : 1.0)
             
         }
         

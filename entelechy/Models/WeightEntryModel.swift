@@ -18,15 +18,17 @@ struct WeightEntryModel: Identifiable {
 extension WeightEntryModel {
     
     static let mockWeightData: [WeightEntryModel] = [
-        WeightEntryModel(id: NSManagedObjectID(), date: Calendar.current.date(from: DateComponents(year: 2026, month: 6, day: 3))!, weight: 189.6),
-        WeightEntryModel(id: NSManagedObjectID(), date: Calendar.current.date(from: DateComponents(year: 2026, month: 6, day: 3))!, weight: 188.3),
-        WeightEntryModel(id: NSManagedObjectID(), date: Calendar.current.date(from: DateComponents(year: 2026, month: 6, day: 2))!, weight: 187.5),
-        WeightEntryModel(id: NSManagedObjectID(), date: Calendar.current.date(from: DateComponents(year: 2026, month: 6, day: 1))!, weight: 186.3),
+//        WeightEntryModel(id: NSManagedObjectID(), date: Calendar.current.date(from: DateComponents(year: 2026, month: 6, day: 16))!, weight: 189.6),
+        
+//        WeightEntryModel(id: NSManagedObjectID(), date: Calendar.current.date(from: DateComponents(year: 2026, month: 6, day: 3))!, weight: 189.6),
+//        WeightEntryModel(id: NSManagedObjectID(), date: Calendar.current.date(from: DateComponents(year: 2026, month: 6, day: 3))!, weight: 188.3),
+//        WeightEntryModel(id: NSManagedObjectID(), date: Calendar.current.date(from: DateComponents(year: 2026, month: 6, day: 2))!, weight: 187.5),
+//        WeightEntryModel(id: NSManagedObjectID(), date: Calendar.current.date(from: DateComponents(year: 2026, month: 6, day: 1))!, weight: 186.3),
 //        
 //        WeightEntryModel(id: NSManagedObjectID(), date: Calendar.current.date(from: DateComponents(year: 2026, month: 5, day: 12))!, weight: 102.2),
 //        
-        WeightEntryModel(id: NSManagedObjectID(), date: Calendar.current.date(from: DateComponents(year: 2026, month: 4, day: 12))!, weight: 101.2),
-        WeightEntryModel(id: NSManagedObjectID(), date: Calendar.current.date(from: DateComponents(year: 2026, month: 4, day: 10))!, weight: 100.6),
+//        WeightEntryModel(id: NSManagedObjectID(), date: Calendar.current.date(from: DateComponents(year: 2026, month: 4, day: 12))!, weight: 101.2),
+//        WeightEntryModel(id: NSManagedObjectID(), date: Calendar.current.date(from: DateComponents(year: 2026, month: 4, day: 10))!, weight: 100.6),
 //        WeightEntryModel(id: NSManagedObjectID(), date: Calendar.current.date(from: DateComponents(year: 2026, month: 4, day: 8))!, weight: 102.1),
 //        WeightEntryModel(id: NSManagedObjectID(), date: Calendar.current.date(from: DateComponents(year: 2026, month: 4, day: 6))!, weight: 101.8),
 //        WeightEntryModel(id: NSManagedObjectID(), date: Calendar.current.date(from: DateComponents(year: 2026, month: 4, day: 3))!, weight: 99.7),

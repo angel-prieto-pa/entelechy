@@ -30,32 +30,45 @@ struct HistoryLogView: View {
 
     var body: some View {
         
-        VStack {
+        let isEmpty: Bool = self.viewModel.weightYearsEnumerated.isEmpty
+        
+        return ZStack {
             
-            ScrollView {
+            if isEmpty {
                 
-                LazyVStack(alignment: .leading, spacing: 0.0, pinnedViews: [.sectionHeaders]) {
-                    
-                    ForEach(viewModel.weightYearsEnumerated, id: \.element.id) { index, weightYear in
-                        self.yearSection(
-                            weightYear: weightYear,
-                            isLastYear: index == self.viewModel.weightYearsEnumerated.count - 1
-                        )
-                    }
-                }
+                EmptyStateView(type: .historyLog)
                 
             }
-            .scrollIndicators(.hidden)
-            .padding(.bottom, self.scrollViewVerticalPadding)
-            .overlay(
-                Rectangle()
-                    .frame(height: AppLayout.contentOutlineHeight)
-                    .foregroundStyle(AppColors.accent),
-                alignment: .bottom
-            )
             
-            Spacer()
-                .frame(maxHeight: self.bottomSpacerHeight)
+            VStack {
+                
+                ScrollView {
+                    
+                    LazyVStack(alignment: .leading, spacing: 0.0, pinnedViews: [.sectionHeaders]) {
+                        
+                        ForEach(self.viewModel.weightYearsEnumerated, id: \.element.id) { index, weightYear in
+                            self.yearSection(
+                                weightYear: weightYear,
+                                isLastYear: index == self.viewModel.weightYearsEnumerated.count - 1
+                            )
+                        }
+                    }
+                    
+                }
+                .scrollIndicators(.hidden)
+                .padding(.bottom, self.scrollViewVerticalPadding)
+                .overlay(
+                    Rectangle()
+                        .frame(height: AppLayout.contentOutlineHeight)
+                        .foregroundStyle(AppColors.accent),
+                    alignment: .bottom
+                )
+                
+                Spacer()
+                    .frame(maxHeight: self.bottomSpacerHeight)
+                
+            }
+            .opacity(isEmpty ? 0.0 : 1.0)
             
         }
         
