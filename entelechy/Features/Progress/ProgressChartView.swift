@@ -15,6 +15,7 @@ struct ProgressChartView: View {
     @ObservedObject private var viewModel: ProgressViewModel
     
     private let calendar = Calendar.current
+    private let calendarUtilities = CalendarUtilities()
     
     @ScaledMetric(relativeTo: .body) private var chartHeight: CGFloat = 320.0
     @ScaledMetric(relativeTo: .body) private var contentSpacing: CGFloat = 2.0 * AppLayout.contentVerticalPadding
@@ -106,10 +107,13 @@ struct ProgressChartView: View {
     // Chart
     private func chart(entries: [WeightEntryModel], averages: [WeightAverageWeekModel], isEmptyChart: Bool) -> some View {
         
-        let xDomain = self.viewModel.getXAxisDomain()
+        let xConfiguration = self.viewModel.getXAxisConfiguration()
+        
+        let xDomain = xConfiguration.domain
         let yDomain = self.viewModel.getYAxisDomain()
         
-        let xAxisMarkers = self.viewModel.getXAxisMarkers(for: xDomain)
+        let xAxisLabelFormat = xConfiguration.labelFormat
+        let xAxisMarkers = xConfiguration.markers
         
         return Chart {
             
@@ -189,7 +193,7 @@ struct ProgressChartView: View {
             self.yAxisMarks(isHidden: isEmptyChart)
         }
         .chartXAxis {
-            self.xAxisMarks(from: xAxisMarkers, isHidden: isEmptyChart)
+            self.xAxisMarks(from: xAxisMarkers, with: xAxisLabelFormat, isHidden: isEmptyChart)
             
         }
         // Chart Plot Style
@@ -294,70 +298,87 @@ struct ProgressChartView: View {
     }
     
     // X-Axis Marks
-    private func xAxisMarks(from dates: [Date], isHidden: Bool) -> some AxisContent {
-        
-        let today: Date = self.calendar.startOfDay(for: Date())
-        
-        /* Determine the tick increments based on the amount of total months, from monthly, bi-monthly, and quarterly. */
-        
-        let isTodayFirst: Bool = (self.calendar.component(.day, from: today) == 1)
+    private func xAxisMarks(from dates: [Date], with format: Date.FormatStyle, isHidden: Bool) -> some AxisContent {
         
         let tickIncrement: Int
         
-        // Month count, based on dates excluding edge month and current day.
-        let monthCount: Int = dates.count - 1 - (isTodayFirst ? 1 : 0)
+        // Marker count, based on total dates.
+        let markerCount: Int = dates.count
         
-        if monthCount < 6 {
-            // Monthly.
+        if markerCount < 6 {
             tickIncrement = 1
-        } else if monthCount < 8 {
-            // Bi-Monthly.
+        } else if markerCount < 10 {
             tickIncrement = 2
         } else {
-            // Quarterly.
             tickIncrement = 3
         }
+       
+        let weekStart: Date = dates[0]
         
         return AxisMarks(values: dates) { value in
             
             // Add style depending on the month or if is hidden.
             if let date = value.as(Date.self) {
                 
-                let month = self.calendar.component(.month, from: date)
-                
                 if isHidden {
                     // Hide label to provide padding for chart.
                     
                     AxisValueLabel(verticalSpacing: 0.5 * self.contentSpacing) {
-                        self.xAxisLabelText(for: date, isHidden: true)
+                        self.xAxisLabelText(for: date, with: format, isHidden: true)
                     }
                     
-                } else if month == 1 {
-                    // Add bold grid line, tick, and label for first of the year.
+                } else if format == .dateTime.month(.abbreviated) {
                     
-                    AxisGridLine(stroke: self.axisStrokeStyleEmphasized)
+                    let month = self.calendar.component(.month, from: date)
                     
-                    AxisTick(stroke: self.axisStrokeStyleEmphasized)
-                    
-                    AxisValueLabel(verticalSpacing: 0.5 * self.contentSpacing) {
-                        self.xAxisLabelText(for: date, isEmphasized: true)
-                    }
-                    
-                } else if (month - 1) % tickIncrement == 0 {
-                    // Add grid line, tick, and label to start of month based on increment level.
-                    
-                    AxisGridLine()
-                    
-                    AxisTick()
-                    
-                    AxisValueLabel(verticalSpacing: 0.5 * self.contentSpacing) {
-                        self.xAxisLabelText(for: date)
+                    if month == 1 {
+                        // Add bold grid line, tick, and label for first of the year.
+                        
+                        AxisGridLine(stroke: self.axisStrokeStyleEmphasized)
+                        
+                        AxisTick(stroke: self.axisStrokeStyleEmphasized)
+                        
+                        AxisValueLabel(verticalSpacing: 0.5 * self.contentSpacing) {
+                            self.xAxisLabelText(for: date, with: format, isEmphasized: true)
+                        }
+                    } else if (month - 1) % tickIncrement == 0 {
+                        // Add grid line, tick, and label to start of month based on increment level.
+                        
+                        AxisGridLine()
+                        
+                        AxisTick()
+                        
+                        AxisValueLabel(verticalSpacing: 0.5 * self.contentSpacing) {
+                            self.xAxisLabelText(for: date, with: format)
+                        }
+                        
+                    } else {
+                        // Add grid line for the start of each month.
+                        
+                        AxisGridLine()
+                        
                     }
                     
                 } else {
-                    // Add grid line for the start of each month.
                     
-                    AxisGridLine()
+                    if self.calendarUtilities.count(of: .day, from: weekStart, to: date) % tickIncrement == 0 {
+                        // Add grid line, tick, and label to start of month based on increment level.
+                        
+                        AxisGridLine()
+                        
+                        AxisTick()
+                        
+                        AxisValueLabel(verticalSpacing: 0.5 * self.contentSpacing) {
+                            self.xAxisLabelText(for: date, with: format)
+                        }
+                        
+                    } else {
+                        // Add grid line for the start of each month.
+                        
+                        AxisGridLine()
+                        
+                    }
+                    
                     
                 }
                 
@@ -367,27 +388,12 @@ struct ProgressChartView: View {
     }
     
     // X-Axis Label Text
-    private func xAxisLabelText(for date: Date, isEmphasized: Bool = false, isHidden: Bool = false) -> some View {
+    private func xAxisLabelText(for date: Date, with format: Date.FormatStyle, isEmphasized: Bool = false, isHidden: Bool = false) -> some View {
         
-        Text(date, format: self.xAxisLabelFormat)
+        Text(date, format: format)
             .fontWeight(isEmphasized ? .medium : .regular)
             .opacity(isHidden ? 0.0 : 1.0)
         
-    }
-    
-    /* helper functions */
-    
-    private var xAxisLabelFormat: Date.FormatStyle {
-        
-        // TODO:
-        switch self.viewModel.selectedPlotTimeRange {
-        case .rangeMonth:
-            return .dateTime.month(.abbreviated).day()
-        case .rangeThreeMonth, .rangeSixMonth, .rangeYear:
-            return .dateTime.month(.abbreviated)
-        case .rangeAll:
-            return .dateTime.month(.abbreviated)
-        }
     }
     
 }

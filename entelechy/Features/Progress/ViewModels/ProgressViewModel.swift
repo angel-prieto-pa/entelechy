@@ -41,6 +41,15 @@ final class ProgressViewModel: ObservableObject {
         
     }
     
+    struct XAxisConfiguration {
+        // Information necessary to render the chart's x-axis.
+        
+        let domain: ClosedRange<Date>
+        let markers: [Date]
+        let labelFormat: Date.FormatStyle
+        
+    }
+    
     /* variables */
     
     @Published var selectedPlotTimeRange: PlotTimeRange = .rangeMonth
@@ -128,7 +137,43 @@ final class ProgressViewModel: ObservableObject {
         
     }
     
-    func getXAxisDomain() -> ClosedRange<Date> {
+    func getXAxisConfiguration() -> XAxisConfiguration {
+        /* Builds the x-axis domain, marker dates, and label format for the selected chart range. */
+        
+        let domain = self.getXAxisDomain()
+        let (markers, labelFormat) = self.getXAxisMarkerInformation(for: domain)
+        
+        return XAxisConfiguration(domain: domain, markers: markers, labelFormat: labelFormat)
+        
+    }
+    
+    func getYAxisDomain() -> ClosedRange<Double> {
+        /* Provides y-axis domain with a range of weight that provides space above and below. */
+        
+        let entries = self.chartEntries
+        let averages = self.chartAverageWeeks
+        
+        if entries.isEmpty {
+            return 0.0...1.0
+        }
+        
+        let weights = entries.map(\.weight) + averages.map(\.average)
+        
+        guard let minWeight = weights.min(), let maxWeight = weights.max() else {
+            return 0.0...0.0
+        }
+        
+        let midpoint = (minWeight + maxWeight) / 2.0
+        let weightSpan = (maxWeight - minWeight) * 1.25
+        let halfSpan = weightSpan / 2.0
+        
+        return (midpoint - halfSpan)...(midpoint + halfSpan)
+        
+    }
+    
+    /* private functions */
+    
+    private func getXAxisDomain() -> ClosedRange<Date> {
         /* Returns the x-axis domain for the selected time range. */
         
         let currentMonthBounds = self.calendarUtilities.monthBounds()
@@ -184,31 +229,7 @@ final class ProgressViewModel: ObservableObject {
         
     }
     
-    func getYAxisDomain() -> ClosedRange<Double> {
-        /* Provides y-axis domain with a range of weight that provides space above and below. */
-        
-        let entries = self.chartEntries
-        let averages = self.chartAverageWeeks
-        
-        if entries.isEmpty {
-            return 0.0...1.0
-        }
-        
-        let weights = entries.map(\.weight) + averages.map(\.average)
-        
-        guard let minWeight = weights.min(), let maxWeight = weights.max() else {
-            return 0.0...0.0
-        }
-        
-        let midpoint = (minWeight + maxWeight) / 2.0
-        let weightSpan = (maxWeight - minWeight) * 1.25
-        let halfSpan = weightSpan / 2.0
-        
-        return (midpoint - halfSpan)...(midpoint + halfSpan)
-        
-    }
-    
-    func getXAxisMarkers(for domain: ClosedRange<Date>) -> [Date] {
+    private func getXAxisMarkerInformation(for domain: ClosedRange<Date>) -> ([Date], Date.FormatStyle) {
         /* Returns dates that will be marked along the x-axis. */
         
         var domainStart = domain.lowerBound
@@ -217,11 +238,13 @@ final class ProgressViewModel: ObservableObject {
         // Provide appropriate interval type to iterate through range.
         
         let intervalComponet: Calendar.Component
+        let labelFormat: Date.FormatStyle
         
         switch self.selectedPlotTimeRange {
             
             case .rangeMonth:
             intervalComponet = .weekOfYear
+            labelFormat = .dateTime.month(.abbreviated).day()
             
             // Find the first start of week for the month.
             let domainFirstWeek = self.calendarUtilities.startDate(of: .weekOfYear, for: domainStart)
@@ -234,12 +257,15 @@ final class ProgressViewModel: ObservableObject {
             
             case .rangeThreeMonth:
             intervalComponet = .month
+            labelFormat = .dateTime.month(.abbreviated)
             
             case .rangeSixMonth:
             intervalComponet = .month
+            labelFormat = .dateTime.month(.abbreviated)
             
             case .rangeYear:
             intervalComponet = .month
+            labelFormat = .dateTime.month(.abbreviated)
             
             case .rangeAll:
             
@@ -248,19 +274,20 @@ final class ProgressViewModel: ObservableObject {
             
             if monthRange < 2 {
                 intervalComponet = .weekOfYear
+                labelFormat = .dateTime.month(.abbreviated).day()
             } else if monthRange < 24 {
                 intervalComponet = .month
+                labelFormat = .dateTime.month(.abbreviated)
             } else {
                 intervalComponet = .year
+                labelFormat = .dateTime.year()
             }
             
         }
         
-        return self.generateXAxisMarkers(for: domainStart...domainEnd, by: intervalComponet)
+        return (self.generateXAxisMarkers(for: domainStart...domainEnd, by: intervalComponet), labelFormat)
         
     }
-    
-    /* private functions */
     
     private func filteredEntries() -> [WeightEntryModel] {
         /* Filters entries for period selected. */
