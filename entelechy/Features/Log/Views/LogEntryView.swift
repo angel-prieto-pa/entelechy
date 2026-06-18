@@ -11,7 +11,7 @@ struct LogEntryView: View {
     
     /* variables */
     
-    private var viewModel: LogEntryViewModel
+    @ObservedObject private var viewModel: LogEntryViewModel
     
     @State private var currentLog: String = ""
     
@@ -42,11 +42,21 @@ struct LogEntryView: View {
                 .frame(maxHeight: AppLayout.titleSpacer)
 
             Group {
-                // Input Box
-                self.inputBox
                 
-                // Input Button
-                self.inputButton
+                if self.viewModel.hasLoggedWeightToday {
+                    
+                    // Logged State
+                    self.loggedState
+                    
+                } else {
+                    
+                    // Input Box
+                    self.inputBox
+                    
+                    // Input Button
+                    self.inputButton
+                    
+                }
             }
             .padding(.vertical, self.inputVerticalPadding)
             
@@ -58,6 +68,32 @@ struct LogEntryView: View {
     
     /* view components */
 
+    // Logged State
+    private var loggedState: some View {
+        /* Confirmation view shown after today's weight has been logged. */
+        
+        VStack(spacing: AppLayout.contentVerticalPadding) {
+            
+            // Check
+            Image(systemName: "checkmark.seal.fill")
+                .font(.system(size: 55.0, weight: .semibold))
+                .foregroundStyle(AppColors.accent)
+                .padding(5.0 * self.inputVerticalPadding)
+            
+            Text("Weight Logged Today")
+                .font(.title3.weight(.semibold))
+                .foregroundStyle(.primary)
+                .padding(2.5 * self.inputVerticalPadding)
+            
+            Text("Come back tomorrow to log your next weight.")
+                .font(.subheadline.weight(.regular))
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity)
+        
+    }
+    
     // Input Box
     private var inputBox: some View {
         /* Box with text field to log weight and show unit of weight. */

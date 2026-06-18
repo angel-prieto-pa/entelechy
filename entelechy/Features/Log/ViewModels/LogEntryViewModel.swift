@@ -5,18 +5,44 @@
 //  Created by Angel Prieto on 11/28/25.
 //
 
-final class LogEntryViewModel {
+import Combine
+import Foundation
+
+final class LogEntryViewModel: ObservableObject {
     
     /* variables */
 
     private let repository: WeightEntryRepository
+    private var cancellables: Set<AnyCancellable>
+    private let calendar = Calendar.current
 
     /* init */
     
     init(repository: WeightEntryRepository) {
         self.repository = repository
+        self.cancellables = []
+        
+        repository.objectWillChange
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in
+                self?.objectWillChange.send()
+            }
+            .store(in: &self.cancellables)
     }
 
+    /* computed properties */
+    
+    var hasLoggedWeightToday: Bool {
+        /* Returns whether a weight has already been logged today. */
+        
+        let today = self.calendar.startOfDay(for: Date())
+        
+        return self.repository.entries.contains { entry in
+            self.calendar.startOfDay(for: entry.date) == today
+        }
+        
+    }
+    
     /* public functions */
     
     func submitWeight(_ input: String) {
