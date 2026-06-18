@@ -157,14 +157,28 @@ final class ProgressViewModel: ObservableObject {
             return 0.0...1.0
         }
         
-        let weights = entries.map(\.weight) + averages.map(\.average)
+        let midpoint: Double
+        let weightSpan: Double
         
-        guard let minWeight = weights.min(), let maxWeight = weights.max() else {
-            return 0.0...0.0
+        if entries.count == 1 {
+            
+            midpoint = entries[0].weight
+            weightSpan = 5.0
+            
+        } else {
+            
+            let weights = entries.map(\.weight) + averages.map(\.average)
+            
+            guard let minWeight = weights.min(), let maxWeight = weights.max() else {
+                return 0.0...0.0
+            }
+            
+            midpoint = (minWeight + maxWeight) / 2.0
+            weightSpan = (maxWeight - minWeight) * 1.25
+            
         }
         
-        let midpoint = (minWeight + maxWeight) / 2.0
-        let weightSpan = (maxWeight - minWeight) * 1.25
+        
         let halfSpan = weightSpan / 2.0
         
         return (midpoint - halfSpan)...(midpoint + halfSpan)
