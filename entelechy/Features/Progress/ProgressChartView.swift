@@ -154,6 +154,29 @@ struct ProgressChartView: View {
                     .symbol(.circle)
                     .symbolSize(self.pointSizeAverages)
                 }
+                
+                // Rule Mark
+                RuleMark(x: .value("Today", Calendar.current.startOfDay(for: Date())))
+                    .foregroundStyle(AppColors.accent)
+                    .lineStyle(StrokeStyle(lineWidth: 1.5))
+                    .annotation(position: .overlay, alignment: .top) {
+                        ZStack {
+                            
+                            Capsule()
+                                .fill(AppColors.accent)
+
+                            Text("Today")
+                                .font(.caption2.weight(.semibold))
+                                .foregroundColor(Color(.systemBackground))
+                                .padding(.horizontal, 0.750 * self.contentSpacing)
+                                .padding(.vertical, 0.50 * self.contentSpacing)
+                            
+                        }
+                        .fixedSize()
+                        
+                    }
+
+                
             }
         }
         // Frame
@@ -167,6 +190,7 @@ struct ProgressChartView: View {
         }
         .chartXAxis {
             self.xAxisMarks(from: xAxisMarkers, isHidden: isEmptyChart)
+            
         }
         // Chart Plot Style
         .chartPlotStyle { plotArea in
@@ -307,17 +331,6 @@ struct ProgressChartView: View {
                     AxisValueLabel(verticalSpacing: 0.5 * self.contentSpacing) {
                         self.xAxisLabelText(for: date, isHidden: true)
                     }
-                    
-//                } else if date == today {
-//                    
-//                    AxisGridLine(stroke: self.axisStrokeStyleEmphasized)
-//                        .foregroundStyle(AppColors.accent)
-//                    
-//                    if isTodayFirst {
-//                        
-//                        AxisTick(stroke: self.axisStrokeStyleEmphasized)
-//                            .foregroundStyle(AppColors.accent)
-//                    }
                     
                 } else if month == 1 {
                     // Add bold grid line, tick, and label for first of the year.

@@ -294,27 +294,10 @@ final class ProgressViewModel: ObservableObject {
         
         var dates: [Date] = []
         
-        let today: Date = self.calendarUtilities.currentDate()
-        var todayNotMarked: Bool = true
-        
         var date: Date = range.lowerBound
-        
-        // Add date if before range.
-        if today < date {
-            dates.append(today)
-            todayNotMarked = false
-        }
         
         // Iterate through period.
         while date <= range.upperBound {
-            
-            // Append current day, unless it is already a date being iterated on.
-            if today == date {
-                todayNotMarked = false
-            } else if (today < date) && todayNotMarked {
-                todayNotMarked = false
-                dates.append(today)
-            }
             
             // Append dates of appropropiate period markers.
             dates.append(date)
@@ -322,10 +305,6 @@ final class ProgressViewModel: ObservableObject {
             // Increase date by period component.
             date = self.calendarUtilities.date(byAdding: intervalComponet, amount: 1, to: date)
             
-        }
-        
-        if todayNotMarked {
-            dates.append(today)
         }
         
         return dates
