@@ -54,10 +54,16 @@ final class LogEntryViewModel: ObservableObject {
     /* public functions */
     
     func submitWeight(_ input: String) -> Bool {
-        /* Returns whether the input is valid or not, if so submits weight into data. */
+        /* Returns whether the input is valid or not, if so submits weight into data if possible. */
         
         guard let weight = self.validate(input) else {
             self.showValidationMessage("Enter a weight between 000.1 and 999.9.")
+            return false
+        }
+        
+        // Prevent multiple weights from being logged in a single day.
+        if hasLoggedWeightToday {
+            self.showValidationMessage("Weight has already been logged today.")
             return false
         }
         
@@ -72,7 +78,7 @@ final class LogEntryViewModel: ObservableObject {
     }
     
     func sanitize(_ input: String) -> String {
-        /* Called by 'updateInput' to sanitize log being inputted. */
+        /* Called by 'updateInput' to sanitize log being input. */
         
         // Return empty string in case input is empty.
         if input.count == 0 {
