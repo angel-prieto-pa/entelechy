@@ -37,7 +37,16 @@ struct ProgressSummaryView: View {
             
             if isEmpty {
                 
-                EmptyStateView(type: .progressSummary)
+                VStack {
+                    
+                    Spacer()
+                    
+                    EmptyStateView(type: .progressSummary)
+                    
+                    Spacer()
+                    Spacer()
+                    
+                }
                 
             }
             

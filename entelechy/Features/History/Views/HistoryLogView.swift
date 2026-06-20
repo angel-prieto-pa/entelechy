@@ -36,7 +36,16 @@ struct HistoryLogView: View {
             
             if isEmpty {
                 
-                EmptyStateView(type: .historyLog)
+                VStack {
+                    
+                    Spacer()
+                    
+                    EmptyStateView(type: .historyLog)
+                    
+                    Spacer()
+                    Spacer()
+                    
+                }
                 
             }
             
