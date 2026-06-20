@@ -296,7 +296,7 @@ struct ProgressChartView: View {
             tickIncrement = 3
         }
        
-        let weekStart: Date = dates[0]
+        let weekStart = dates.first
         
         return AxisMarks(values: dates) { value in
             
@@ -344,21 +344,25 @@ struct ProgressChartView: View {
                     
                 } else {
                     
-                    if self.calendarUtilities.count(of: .day, from: weekStart, to: date) % tickIncrement == 0 {
-                        // Add grid line, tick, and label to start of month based on increment level.
+                    if let weekStart {
                         
-                        AxisGridLine()
-                        
-                        AxisTick()
-                        
-                        AxisValueLabel(verticalSpacing: 0.5 * self.contentSpacing) {
-                            self.xAxisLabelText(for: date, with: format)
+                        if self.calendarUtilities.count(of: .day, from: weekStart, to: date) % tickIncrement == 0 {
+                            // Add grid line, tick, and label to start of month based on increment level.
+                            
+                            AxisGridLine()
+                            
+                            AxisTick()
+                            
+                            AxisValueLabel(verticalSpacing: 0.5 * self.contentSpacing) {
+                                self.xAxisLabelText(for: date, with: format)
+                            }
+                            
+                        } else {
+                            // Add grid line for the start of each month.
+                            
+                            AxisGridLine()
+                            
                         }
-                        
-                    } else {
-                        // Add grid line for the start of each month.
-                        
-                        AxisGridLine()
                         
                     }
                     

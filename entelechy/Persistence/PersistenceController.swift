@@ -12,14 +12,23 @@ struct PersistenceController {
     static let shared = PersistenceController()
 
     let container: NSPersistentContainer
+    let loadError: Error?
 
     init() {
-        container = NSPersistentContainer(name: "WeightModel")
-        container.loadPersistentStores { _, error in
-            if let error = error {
-                fatalError("Error loading Core Data: \(error)")
+        
+        self.container = NSPersistentContainer(name: "WeightModel")
+        
+        var persistentStoreLoadError: Error?
+        
+        self.container.loadPersistentStores { _, error in
+            if let error {
+                persistentStoreLoadError = error
             }
         }
+        
+        // Error state in case of fail to load data.
+        self.loadError = persistentStoreLoadError
+        
     }
     
 }

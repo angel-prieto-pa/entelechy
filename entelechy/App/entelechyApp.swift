@@ -11,12 +11,20 @@ import CoreData
 @main
 struct entelechyApp: App {
     
-    let persistenceContext = PersistenceController.shared.container.viewContext
+    private let persistenceController = PersistenceController.shared
     
     var body: some Scene {
+        
         WindowGroup {
-            HomeView(context: persistenceContext)
+            
+            if let loadError = self.persistenceController.loadError {
+                PersistenceErrorView(error: loadError)
+            } else {
+                HomeView(context: self.persistenceController.container.viewContext)
+            }
+            
         }
+        
     }
     
 }

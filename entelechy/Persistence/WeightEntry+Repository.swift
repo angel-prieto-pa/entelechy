@@ -12,7 +12,6 @@ extension WeightEntry {
     static func fetchEntries(from context: NSManagedObjectContext) throws -> [WeightEntryModel] {
         
         let request = WeightEntry.fetchRequest()
-        return WeightEntryModel.mockWeightData
         
         request.sortDescriptors = [
             NSSortDescriptor(keyPath: \WeightEntry.date, ascending: false)
