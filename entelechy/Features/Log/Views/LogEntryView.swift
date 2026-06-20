@@ -56,6 +56,14 @@ struct LogEntryView: View {
                     // Input Button
                     self.inputButton
                     
+                    // Error Message
+                    if let validationErrorMessage = self.viewModel.validationErrorMessage {
+                        Text(validationErrorMessage)
+                            .font(.footnote.weight(.medium))
+                            .foregroundStyle(.red)
+                            .multilineTextAlignment(.center)
+                    }
+                    
                 }
             }
             .padding(.vertical, self.inputVerticalPadding)
@@ -136,8 +144,11 @@ struct LogEntryView: View {
         /* Button to log weight from text box. */
         
         Button(action: {
-            self.viewModel.submitWeight(self.currentLog)
-            self.currentLog = ""
+            
+            if self.viewModel.submitWeight(self.currentLog) {
+                self.currentLog = ""
+            }
+            
         }) {
             Text("Log")
                 .font(.headline)

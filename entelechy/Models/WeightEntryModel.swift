@@ -18,7 +18,7 @@ struct WeightEntryModel: Identifiable {
 extension WeightEntryModel {
     
     static let mockWeightData: [WeightEntryModel] = [
-        WeightEntryModel(id: NSManagedObjectID(), date: Calendar.current.date(from: DateComponents(year: 2026, month: 6, day: 17))!, weight: 187.3),
+//        WeightEntryModel(id: NSManagedObjectID(), date: Calendar.current.date(from: DateComponents(year: 2026, month: 6, day: 17))!, weight: 187.3),
         
 //        WeightEntryModel(id: NSManagedObjectID(), date: Calendar.current.date(from: DateComponents(year: 2026, month: 6, day: 3))!, weight: 189.6),
 //        WeightEntryModel(id: NSManagedObjectID(), date: Calendar.current.date(from: DateComponents(year: 2026, month: 6, day: 3))!, weight: 188.3),

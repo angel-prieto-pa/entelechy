@@ -13,7 +13,12 @@ extension WeightEntry {
         
         let request = WeightEntry.fetchRequest()
         return WeightEntryModel.mockWeightData
-//        return try context.fetch(request).compactMap { $0.toModel() }
+        
+        request.sortDescriptors = [
+            NSSortDescriptor(keyPath: \WeightEntry.date, ascending: false)
+        ]
+
+        return try context.fetch(request).compactMap { $0.toModel() }
         
     }
     

@@ -14,7 +14,11 @@ final class LogEntryViewModel: ObservableObject {
 
     private let repository: WeightEntryRepository
     private var cancellables: Set<AnyCancellable>
+    
     private let calendar = Calendar.current
+    
+    @Published var validationErrorMessage: String?
+    private var validationErrorMessageClearTask: Task<Void, Never>?
 
     /* init */
     
@@ -28,6 +32,10 @@ final class LogEntryViewModel: ObservableObject {
                 self?.objectWillChange.send()
             }
             .store(in: &self.cancellables)
+    }
+
+    deinit {
+        self.validationErrorMessageClearTask?.cancel()
     }
 
     /* computed properties */
@@ -45,9 +53,22 @@ final class LogEntryViewModel: ObservableObject {
     
     /* public functions */
     
-    func submitWeight(_ input: String) {
-        let weight = self.validate(input)
+    func submitWeight(_ input: String) -> Bool {
+        /* Returns whether the input is valid or not, if so submits weight into data. */
+        
+        guard let weight = self.validate(input) else {
+            self.showValidationMessage("Enter a weight between 000.1 and 999.9.")
+            return false
+        }
+        
+        // Clear validation error message.
+        self.validationErrorMessageClearTask?.cancel()
+        self.validationErrorMessage = nil
+        
         self.repository.addEntry(weight: weight)
+        
+        return true
+        
     }
     
     func sanitize(_ input: String) -> String {
@@ -87,15 +108,35 @@ final class LogEntryViewModel: ObservableObject {
     
     /* helper functions */
 
-    private func validate(_ input: String) -> Double {
-        /* Validate weight and return input as a double. */
+    private func validate(_ input: String) -> Double? {
+        /* Validate weight and return input as a double if valid. */
         
-        guard let value = Double(input), value >= 000.0, value <= 999.9 else {
-            // TODO: throw error
-            return 0.0
+        guard let value = Double(input), value >= 000.1, value <= 999.9 else {
+            return nil
         }
         
         return value
+        
+    }
+    
+    private func showValidationMessage(_ message: String) {
+        /* Shows a validation message temporarily. */
+        
+        self.validationErrorMessage = message
+        self.validationErrorMessageClearTask?.cancel()
+        
+        //
+        self.validationErrorMessageClearTask = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(2))
+            
+            guard !Task.isCancelled else {
+                return
+            }
+            
+            await MainActor.run {
+                self?.validationErrorMessage = nil
+            }
+        }
         
     }
     
